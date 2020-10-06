@@ -13,7 +13,8 @@ describe("CellDisplayAndEditTag unit test", () => {
             width: 50,
             disableFilters: true,
             columnId: "column_0",
-            displayInExpandedRegion: false
+            isDisplayInExpandedRegion: false,
+            display: true
         },
         {
             Header: "Flight",
@@ -22,40 +23,46 @@ describe("CellDisplayAndEditTag unit test", () => {
             innerCells: [
                 {
                     Header: "Flight No",
-                    accessor: "flightno"
+                    accessor: "flightno",
+                    display: true,
+                    isSearchable: true,
+                    cellId: "column_1_cell_0"
                 },
                 {
                     Header: "Date",
-                    accessor: "date"
+                    accessor: "date",
+                    display: true,
+                    isSearchable: true,
+                    cellId: "column_1_cell_1"
                 }
             ],
             sortValue: "flightno",
             columnId: "column_1",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Flight No",
-                    accessor: "flightno"
-                },
-                {
-                    Header: "Date",
-                    accessor: "date"
-                }
-            ]
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         }
     ];
     const columnMockData = {
         id: "flight",
         depth: 0,
         innerCells: [
-            { Header: "Flight No", accessor: "flightno" },
-            { Header: "Date", accessor: "date" }
+            {
+                Header: "Flight No",
+                accessor: "flightno",
+                display: true,
+                cellId: "rowExpand_cell_0"
+            },
+            {
+                Header: "Date",
+                accessor: "date",
+                display: true,
+                cellId: "rowExpand_cell_1"
+            }
         ],
+        columnId: "rowExpand",
         isVisible: true,
-        originalInnerCells: [
-            { Header: "Flight No", accessor: "flightno" },
-            { Header: "Date", accessor: "date" }
-        ]
+        display: true
     };
 
     let container;

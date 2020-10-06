@@ -14,7 +14,7 @@
     right: 0;
     transition: 0.5s;
     background: var(--white);
-    border: 1px solid var(--border-grey);
+    border: 1px solid var(--light-grey);
     &:before {
         width: 0px;
         height: 0px;
@@ -40,7 +40,7 @@
     }
     &__title {
         display: flex;
-        border-bottom: 1px solid var(--border-grey);
+        border-bottom: 1px solid var(--light-grey);
         padding: 5px 10px;
         h2 {
             font-size: rem(14);
@@ -123,20 +123,6 @@
             .sort__btns {
                 margin-left: auto;
             }
-            .btns {
-                border: none;
-                background: var(--white);
-                border-radius: 5px;
-                width: 88px;
-                margin-left: 10px;
-                height: 28px;
-                color: var(--button-blue);
-                cursor: pointer;
-            }
-            .btns__save {
-                color: var(--white);
-                background: var(--button-blue);
-            }
         }
         .icon-close {
             font-size: rem(15);
@@ -145,6 +131,39 @@
             margin-bottom: 10px;
             padding-left: 43px;
             color: var(--danger);
+        }
+    }
+    .columnSearch.column__body {
+        padding: 10px;
+        margin-bottom: 10px;
+        height: 440px;
+        width: 160px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        .column__selectAll {
+            display: flex;
+            padding: 0px 10px;
+        }
+        .custom__ctrl {
+            border: 1px solid var(--light-grey);
+            border-radius: 5px;
+            padding: 0px 5px;
+            width: 93%;
+            height: 25px;
+            font-size: rem(11);
+        }
+        .column__wrap {
+            display: flex;
+            border: 1px solid var(--light-grey);
+            border-radius: 5px;
+            padding: 0px 10px;
+            .column__txt {
+                font-size: rem(12);
+                color: var(--titlecolor);
+            }
+        }
+        .column__checkbox {
+            margin-right: 10px;
         }
     }
     &.neo-grid-popover--column {
@@ -162,39 +181,6 @@
         }
         .column__chooser {
             border-right: 1px solid var(--light-grey);
-            .column__body {
-                padding: 10px;
-                margin-bottom: 10px;
-                height: 440px;
-                width: 160px;
-                overflow-y: auto;
-                overflow-x: hidden;
-            }
-            .column__selectAll {
-                display: flex;
-                padding: 0px 10px;
-            }
-            .custom__ctrl {
-                border: 1px solid var(--light-grey);
-                border-radius: 5px;
-                padding: 0px 5px;
-                width: 93%;
-                height: 25px;
-                font-size: rem(11);
-            }
-            .column__wrap {
-                display: flex;
-                border: 1px solid var(--light-grey);
-                border-radius: 5px;
-                padding: 0px 10px;
-                .column__txt {
-                    font-size: rem(12);
-                    color: var(--titlecolor);
-                }
-            }
-            .column__checkbox {
-                margin-right: 10px;
-            }
         }
         .column__settings {
             .column__close {
@@ -210,6 +196,9 @@
                 height: 380px;
                 width: 768px;
                 padding-bottom: 60px;
+                .form-check {
+                    margin-bottom: 4px;
+                }
             }
             .column__reorder {
                 border: 1px solid #8da3b4;
@@ -256,29 +245,16 @@
             }
             .column__footer {
                 padding: 10px;
-                border-top: 1px solid var(--border-grey);
+                border-top: 1px solid var(--light-grey);
                 position: absolute;
                 bottom: 0px;
                 right: 0px;
-                width: 79.3%;
+                width: 79.2%;
                 display: flex;
                 background: var(--white);
             }
             .column__btns {
                 margin-left: auto;
-            }
-            .btns {
-                border: 1px solid var(--button-blue);
-                background: #fff;
-                border-radius: 5px;
-                width: 98px;
-                margin-left: 10px;
-                color: var(--button-blue);
-                height: 32px;
-            }
-            .btns__save {
-                color: #fff;
-                background: var(--button-blue);
             }
             .icon-close {
                 font-size: rem(15);
@@ -295,46 +271,16 @@
         display: flex;
         .export__header {
             padding: 10px;
-            border-bottom: var(--border-grey) solid 1px;
+            border-bottom: var(--light-grey) solid 1px;
             color: #3c425e;
             font-size: rem(13);
             display: flex;
         }
         .export__chooser {
             width: 45%;
-            .export__body {
-                padding: 10px;
-                padding-bottom: 10px;
-                height: 440px;
-                overflow-y: auto;
-                overflow-x: hidden;
-                border-right: var(--border-grey) solid 1px;
-            }
-
-            .export__txt {
-                font-size: rem(12);
-                color: var(--titlecolor);
-            }
-            .custom__ctrl {
-                border: 1px solid var(--light-grey);
-                border-radius: 5px;
-                padding: 0px 5px;
-                box-sizing: border-box;
-                height: 25px;
-                font-size: rem(11);
-                width: 100%;
-            }
-            .export__wrap {
-                display: flex;
-                border: 1px solid var(--light-grey);
-                border-radius: 5px;
-                padding: 0px 10px;
-                &.export__headertxt {
-                    border: none;
-                }
-            }
-            .export__checkbox {
-                margin-right: 10px;
+            border-right: 1px solid var(--light-grey);
+            .export__headertxt {
+                border: none;
             }
         }
         .export__settings {
@@ -369,19 +315,13 @@
                     line-height: normal;
                 }
             }
-            .check-wrap {
-                line-height: normal;
-                input {
-                    margin: 0px;
-                }
-            }
             .export__footer {
                 padding: 15px 10px;
-                border-top: 1px solid var(--border-grey);
+                border-top: 1px solid var(--light-grey);
                 position: absolute;
                 bottom: 0px;
                 right: 0px;
-                width: 65.5%;
+                width: 63.5%;
                 display: flex;
                 @media only screen and (max-width: 1024px) {
                     width: 66.1%;
@@ -389,19 +329,6 @@
             }
             .export__btns {
                 margin-left: auto;
-            }
-            .btns {
-                border: 1px solid var(--button-blue);
-                background: var(--white);
-                border-radius: 5px;
-                width: 98px;
-                margin-left: 10px;
-                color: var(--button-blue);
-                height: 32px;
-            }
-            .btns__save {
-                color: var(--white);
-                background: var(--button-blue);
             }
             .exportWarning {
                 position: absolute;

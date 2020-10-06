@@ -8,7 +8,7 @@ const AdditionalColumnTag = (props) => {
     const { additionalColumn } = contextVallues;
     const { cellKey } = props;
 
-    if (additionalColumn && cellKey) {
+    if (additionalColumn && additionalColumn.display === true && cellKey) {
         if (checkInnerCells(additionalColumn, cellKey)) {
             return (
                 <React.Fragment key="AdditionalColumnFragment">

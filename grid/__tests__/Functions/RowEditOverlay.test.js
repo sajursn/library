@@ -131,7 +131,8 @@ describe("render row edit overlay", () => {
             accessor: "travelId",
             width: 50,
             disableFilters: true,
-            columnId: "column_0"
+            columnId: "column_0",
+            display: true
         },
         {
             Header: "Flight",
@@ -140,25 +141,23 @@ describe("render row edit overlay", () => {
             innerCells: [
                 {
                     Header: "Flight No",
-                    accessor: "flightno"
+                    accessor: "flightno",
+                    display: true,
+                    cellId: "column_1_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Date",
-                    accessor: "date"
+                    accessor: "date",
+                    display: true,
+                    cellId: "column_1_cell_1",
+                    isSearchable: true
                 }
             ],
             sortValue: "flightno",
             columnId: "column_1",
-            originalInnerCells: [
-                {
-                    Header: "Flight No",
-                    accessor: "flightno"
-                },
-                {
-                    Header: "Date",
-                    accessor: "date"
-                }
-            ]
+            display: true,
+            isSearchable: true
         },
         {
             Header: "Segment",
@@ -167,25 +166,23 @@ describe("render row edit overlay", () => {
             innerCells: [
                 {
                     Header: "From",
-                    accessor: "from"
+                    accessor: "from",
+                    display: true,
+                    cellId: "column_2_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "To",
-                    accessor: "to"
+                    accessor: "to",
+                    display: true,
+                    cellId: "column_2_cell_1",
+                    isSearchable: true
                 }
             ],
             disableSortBy: true,
             columnId: "column_2",
-            originalInnerCells: [
-                {
-                    Header: "From",
-                    accessor: "from"
-                },
-                {
-                    Header: "To",
-                    accessor: "to"
-                }
-            ]
+            display: true,
+            isSearchable: true
         },
         {
             Header: "Weight",
@@ -194,25 +191,23 @@ describe("render row edit overlay", () => {
             innerCells: [
                 {
                     Header: "Percentage",
-                    accessor: "percentage"
+                    accessor: "percentage",
+                    display: true,
+                    cellId: "column_3_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Value",
-                    accessor: "value"
+                    accessor: "value",
+                    display: true,
+                    cellId: "column_3_cell_1",
+                    isSearchable: true
                 }
             ],
             sortValue: "percentage",
             columnId: "column_3",
-            originalInnerCells: [
-                {
-                    Header: "Percentage",
-                    accessor: "percentage"
-                },
-                {
-                    Header: "Value",
-                    accessor: "value"
-                }
-            ]
+            display: true,
+            isSearchable: true
         }
     ];
 
@@ -221,26 +216,20 @@ describe("render row edit overlay", () => {
         innerCells: [
             {
                 Header: "Remarks",
-                accessor: "remarks"
+                accessor: "remarks",
+                display: true,
+                cellId: "rowExpand_cell_0"
             },
             {
                 Header: "Details",
                 onlyInTablet: true,
-                accessor: "details"
+                accessor: "details",
+                display: true,
+                cellId: "rowExpand_cell_1"
             }
         ],
-        columnId: "ExpandColumn",
-        originalInnerCells: [
-            {
-                Header: "Remarks",
-                accessor: "remarks"
-            },
-            {
-                Header: "Details",
-                onlyInTablet: true,
-                accessor: "details"
-            }
-        ]
+        columnId: "rowExpand",
+        display: true
     };
 
     const mockUpdateDateValue = jest.fn();

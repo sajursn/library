@@ -1,9 +1,9 @@
 #loader {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: rem(20);
     .dots {
-        width: 380px;
+        width: rem(380);
         padding: 20px 0 10px;
         border: #dce1e5 solid 1px;
         display: flex;

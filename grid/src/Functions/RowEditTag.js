@@ -5,12 +5,12 @@ import { checkInnerCells } from "../Utilities/TagUtilities";
 
 const RowEditTag = (props) => {
     const contextVallues = useContext(RowEditContext);
-    const { columns, additionalColumn, isRowExpandEnabled } = contextVallues;
+    const { columns, additionalColumn } = contextVallues;
     const { cellKey, columnKey } = props;
 
     if (columns && columnKey) {
         const selectedColumn = columns.find(
-            (col) => col.accessor === columnKey
+            (col) => col.accessor === columnKey && col.display === true
         );
         if (selectedColumn && !selectedColumn.innerCells) {
             return (
@@ -27,7 +27,11 @@ const RowEditTag = (props) => {
                     </React.Fragment>
                 );
             }
-        } else if (!selectedColumn && isRowExpandEnabled && additionalColumn) {
+        } else if (
+            !selectedColumn &&
+            additionalColumn &&
+            additionalColumn.display === true
+        ) {
             if (checkInnerCells(additionalColumn, columnKey)) {
                 return (
                     <React.Fragment key="RowEditFragment">

@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
     extractColumns,
     extractAdditionalColumn
 } from "./Utilities/ColumnsUtilities";
-import { AdditionalColumnContext } from "./Utilities/TagsContext";
-import AdditionalColumnTag from "./Functions/AdditionalColumnTag";
 import Customgrid from "./Customgrid";
 // eslint-disable-next-line import/no-unresolved
 import "!style-loader!css-loader!sass-loader!./Styles/main.scss";
@@ -18,7 +16,8 @@ const Grid = (props) => {
         gridWidth,
         gridData,
         idAttribute,
-        isNextPageAvailable,
+        paginationType,
+        pageInfo,
         loadMoreData,
         columns,
         columnToExpand,
@@ -58,16 +57,37 @@ const Grid = (props) => {
         const rowAccessorValue = original[accessor];
         // Check if inner cells are available and save value to boolean var
         const isInnerCellsPresent = innerCells && innerCells.length > 0;
-        // Enter if cell value is object or array
-        if (typeof rowAccessorValue === "object" && isInnerCellsPresent) {
-            // Enter if cell value is array
-            if (rowAccessorValue.length > 0) {
-                // Loop through cell array value and check if searched text is present
-                rowAccessorValue.forEach((value) => {
+        // Check if the column needs to be skipped from search
+        if (column.isSearchable) {
+            // Enter if cell value is object or array
+            if (typeof rowAccessorValue === "object" && isInnerCellsPresent) {
+                // Enter if cell value is array
+                if (rowAccessorValue.length > 0) {
+                    // Loop through cell array value and check if searched text is present
+                    rowAccessorValue.forEach((value) => {
+                        innerCells.forEach((cell) => {
+                            const dataAccessor = value[cell.accessor];
+                            const isSearchEnabled = cell.isSearchable;
+                            if (
+                                dataAccessor &&
+                                isSearchEnabled &&
+                                dataAccessor
+                                    .toString()
+                                    .toLowerCase()
+                                    .includes(searchText)
+                            ) {
+                                isValuePresent = true;
+                            }
+                        });
+                    });
+                } else {
+                    // If cell value is an object, loop through inner cells and check if searched text is present
                     innerCells.forEach((cell) => {
-                        const dataAccessor = value[cell.accessor];
+                        const dataAccessor = original[accessor][cell.accessor];
+                        const isSearchEnabled = cell.isSearchable;
                         if (
                             dataAccessor &&
+                            isSearchEnabled &&
                             dataAccessor
                                 .toString()
                                 .toLowerCase()
@@ -76,30 +96,16 @@ const Grid = (props) => {
                             isValuePresent = true;
                         }
                     });
-                });
+                }
             } else {
-                // If cell value is an object, loop through inner cells and check if searched text is present
-                innerCells.forEach((cell) => {
-                    const dataAccessor = original[accessor][cell.accessor];
-                    if (
-                        dataAccessor &&
-                        dataAccessor
-                            .toString()
-                            .toLowerCase()
-                            .includes(searchText)
-                    ) {
-                        isValuePresent = true;
-                    }
-                });
-            }
-        } else {
-            // If cell value is not an object or array, convert it to text and check if searched text is present
-            const dataAccessor = original[accessor];
-            if (
-                dataAccessor &&
-                dataAccessor.toString().toLowerCase().includes(searchText)
-            ) {
-                isValuePresent = true;
+                // If cell value is not an object or array, convert it to text and check if searched text is present
+                const dataAccessor = original[accessor];
+                if (
+                    dataAccessor &&
+                    dataAccessor.toString().toLowerCase().includes(searchText)
+                ) {
+                    isValuePresent = true;
+                }
             }
         }
         return isValuePresent;
@@ -135,27 +141,6 @@ const Grid = (props) => {
 
     // Create columns variable, to be used by grid component
     const gridColumns = processedColumns || [];
-
-    // Local variable for keeping the expanded row rendering method
-    const renderExpandedContent = additionalColumn
-        ? additionalColumn.displayCell
-        : null;
-
-    // #region - Check if data is hidden or not and display data in rendered section
-
-    // Process data to be rendered to expanded view and return that data to the render function
-    const displayExpandedContent = (row) => {
-        const { original } = row;
-        const additionalColumnObj = additionalColumn;
-        return (
-            <AdditionalColumnContext.Provider
-                value={{ additionalColumn: additionalColumnObj }}
-            >
-                {renderExpandedContent(original, AdditionalColumnTag)}
-            </AdditionalColumnContext.Provider>
-        );
-    };
-    // #endregion
 
     // Add logic to calculate height of each row, based on the content of  or more columns
     // This can be used only if developer using the component has not passed a function to calculate row height
@@ -245,15 +230,26 @@ const Grid = (props) => {
     // Gets called when page scroll reaches the bottom of the grid.
     // Trigger call back and get the grid data updated.
     const loadNextPage = () => {
-        if (isNextPageAvailable) {
+        const { lastPage, pageNum, pageSize, endCursor } = pageInfo;
+        if (!lastPage) {
             setIsNextPageLoading(true);
-            loadMoreData();
+            if (paginationType === "index") {
+                loadMoreData({
+                    pageNum: pageNum + 1,
+                    pageSize
+                });
+            } else {
+                loadMoreData({
+                    endCursor,
+                    pageSize
+                });
+            }
         }
     };
 
     useEffect(() => {
         setIsNextPageLoading(false);
-    }, [gridData]);
+    }, [gridData, pageInfo]);
 
     // Sort the data based on the user selected group sort optipons
     const data =
@@ -286,17 +282,19 @@ const Grid = (props) => {
             </div>
         );
     }
+
+    const { total, lastPage } = pageInfo;
     return (
         <div className={`grid-component-container ${className || ""}`}>
             <Customgrid
                 title={title}
                 gridHeight={gridHeight}
                 gridWidth={gridWidth}
-                managableColumns={useMemo(() => gridColumns)} // React table wants all parameters passed into useTable function to be memoized
-                originalColumns={gridColumns}
-                additionalColumn={additionalColumn}
-                data={useMemo(() => data)} // React table wants all parameters passed into useTable function to be memoized
+                managableColumns={gridColumns}
+                expandedRowData={additionalColumn}
+                data={data}
                 idAttribute={idAttribute}
+                totalRecordsCount={total}
                 getRowEditOverlay={getRowEditOverlay}
                 updateRowInGrid={updateRowInGrid}
                 deleteRowFromGrid={deleteRowFromGrid}
@@ -308,14 +306,10 @@ const Grid = (props) => {
                         ? calculateRowHeight
                         : calculateDefaultRowHeight
                 }
-                isExpandContentAvailable={
-                    typeof renderExpandedContent === "function"
-                }
                 expandableColumn={expandableColumn}
-                displayExpandedContent={displayExpandedContent}
                 rowActions={rowActions}
                 rowActionCallback={rowActionCallback}
-                hasNextPage={isNextPageAvailable}
+                hasNextPage={!lastPage}
                 isNextPageLoading={isNextPageLoading}
                 loadNextPage={loadNextPage}
                 doGroupSort={doGroupSort}
@@ -350,7 +344,8 @@ Grid.propTypes = {
     columnToExpand: PropTypes.object,
     gridData: PropTypes.arrayOf(PropTypes.object),
     idAttribute: PropTypes.string,
-    isNextPageAvailable: PropTypes.bool,
+    paginationType: PropTypes.string,
+    pageInfo: PropTypes.object,
     loadMoreData: PropTypes.func,
     getRowEditOverlay: PropTypes.func,
     onRowUpdate: PropTypes.func,

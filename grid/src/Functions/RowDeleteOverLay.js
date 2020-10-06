@@ -20,10 +20,10 @@ const RowDeleteOverLay = ({
             data-testid="rowDeleteOverlay-container"
             onClickAway={closeRowDeleteOverlay}
         >
-            <div className="cancel-save-buttons-delete">
+            <div className="btn-wrap">
                 <button
                     type="button"
-                    className="delete-Button"
+                    className="neo-btn neo-btn-primary btn btn-secondary"
                     data-testid="rowDeleteOverlay-Delete"
                     onClick={deleteRow}
                 >
@@ -31,7 +31,7 @@ const RowDeleteOverLay = ({
                 </button>
                 <button
                     type="button"
-                    className="cancel-Button"
+                    className="neo-btn neo-btn-default btn btn-secondary"
                     data-testid="rowDeleteOverlay-cancel"
                     onClick={closeRowDeleteOverlay}
                 >

@@ -10,26 +10,21 @@ import ColumnReordering from "../../../src/Overlays/managecolumns/index";
 
 describe("ColumnReordering unit test", () => {
     const mockUpdateColumnStructure = jest.fn();
-    const toggleManageColumns = jest.fn();
-    const mockAdditionalColumn = [
-        {
-            Header: "Remarks",
-            innerCells: [
-                {
-                    Header: "Remarks",
-                    accessor: "remarks"
-                }
-            ],
-            columnId: "ExpandColumn",
-            displayInExpandedRegion: true,
-            originalInnerCells: [
-                {
-                    Header: "Remarks",
-                    accessor: "remarks"
-                }
-            ]
-        }
-    ];
+    const toggleManageColumnsOverlay = jest.fn();
+    const mockAdditionalColumn = {
+        Header: "Remarks",
+        innerCells: [
+            {
+                Header: "Remarks",
+                accessor: "remarks",
+                display: true,
+                cellId: "rowExpand_cell_0"
+            }
+        ],
+        columnId: "rowExpand",
+        isDisplayInExpandedRegion: true,
+        display: true
+    };
 
     const mockOriginalColumns = [
         {
@@ -38,7 +33,8 @@ describe("ColumnReordering unit test", () => {
             width: 50,
             disableFilters: true,
             columnId: "column_0",
-            displayInExpandedRegion: false
+            isDisplayInExpandedRegion: false,
+            display: true
         },
         {
             Header: "Flight",
@@ -47,26 +43,24 @@ describe("ColumnReordering unit test", () => {
             innerCells: [
                 {
                     Header: "Flight No",
-                    accessor: "flightno"
+                    accessor: "flightno",
+                    display: true,
+                    cellId: "column_1_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Date",
-                    accessor: "date"
+                    accessor: "date",
+                    display: true,
+                    cellId: "column_1_cell_1",
+                    isSearchable: true
                 }
             ],
             sortValue: "flightno",
             columnId: "column_1",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Flight No",
-                    accessor: "flightno"
-                },
-                {
-                    Header: "Date",
-                    accessor: "date"
-                }
-            ]
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         },
         {
             Header: "Segment",
@@ -75,26 +69,24 @@ describe("ColumnReordering unit test", () => {
             innerCells: [
                 {
                     Header: "From",
-                    accessor: "from"
+                    accessor: "from",
+                    display: true,
+                    cellId: "column_2_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "To",
-                    accessor: "to"
+                    accessor: "to",
+                    display: true,
+                    cellId: "column_2_cell_1",
+                    isSearchable: true
                 }
             ],
             disableSortBy: true,
             columnId: "column_2",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "From",
-                    accessor: "from"
-                },
-                {
-                    Header: "To",
-                    accessor: "to"
-                }
-            ]
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         },
         {
             Header: "Weight",
@@ -103,26 +95,24 @@ describe("ColumnReordering unit test", () => {
             innerCells: [
                 {
                     Header: "Percentage",
-                    accessor: "percentage"
+                    accessor: "percentage",
+                    display: true,
+                    cellId: "column_3_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Value",
-                    accessor: "value"
+                    accessor: "value",
+                    display: true,
+                    cellId: "column_3_cell_1",
+                    isSearchable: true
                 }
             ],
             sortValue: "percentage",
             columnId: "column_3",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Percentage",
-                    accessor: "percentage"
-                },
-                {
-                    Header: "Value",
-                    accessor: "value"
-                }
-            ]
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         },
         {
             Header: "Volume",
@@ -131,26 +121,24 @@ describe("ColumnReordering unit test", () => {
             innerCells: [
                 {
                     Header: "Percentage",
-                    accessor: "percentage"
+                    accessor: "percentage",
+                    display: true,
+                    cellId: "column_4_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Value",
-                    accessor: "value"
+                    accessor: "value",
+                    display: true,
+                    cellId: "column_4_cell_1",
+                    isSearchable: true
                 }
             ],
             sortValue: "percentage",
             columnId: "column_4",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Percentage",
-                    accessor: "percentage"
-                },
-                {
-                    Header: "Value",
-                    accessor: "value"
-                }
-            ]
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         },
         {
             Header: "ULD Positions",
@@ -159,26 +147,24 @@ describe("ColumnReordering unit test", () => {
             innerCells: [
                 {
                     Header: "Position",
-                    accessor: "position"
+                    accessor: "position",
+                    display: true,
+                    cellId: "column_5_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Value",
-                    accessor: "value"
+                    accessor: "value",
+                    display: true,
+                    cellId: "column_5_cell_1",
+                    isSearchable: true
                 }
             ],
             disableSortBy: true,
             columnId: "column_5",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Position",
-                    accessor: "position"
-                },
-                {
-                    Header: "Value",
-                    accessor: "value"
-                }
-            ]
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         },
         {
             Header: "Revenue/Yield",
@@ -187,33 +173,33 @@ describe("ColumnReordering unit test", () => {
             innerCells: [
                 {
                     Header: "Revenue",
-                    accessor: "revenue"
+                    accessor: "revenue",
+                    display: true,
+                    cellId: "column_6_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Yeild",
-                    accessor: "yeild"
+                    accessor: "yeild",
+                    display: true,
+                    cellId: "column_6_cell_1",
+                    isSearchable: true
                 }
             ],
             sortValue: "revenue",
             columnId: "column_6",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Revenue",
-                    accessor: "revenue"
-                },
-                {
-                    Header: "Yeild",
-                    accessor: "yeild"
-                }
-            ]
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         },
         {
             Header: "SR",
             accessor: "sr",
             width: 90,
             columnId: "column_7",
-            displayInExpandedRegion: false
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         },
         {
             Header: "Queued Booking",
@@ -222,26 +208,24 @@ describe("ColumnReordering unit test", () => {
             innerCells: [
                 {
                     Header: "Sr",
-                    accessor: "sr"
+                    accessor: "sr",
+                    display: true,
+                    cellId: "column_8_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Volume",
-                    accessor: "volume"
+                    accessor: "volume",
+                    display: true,
+                    cellId: "column_8_cell_1",
+                    isSearchable: true
                 }
             ],
             disableSortBy: true,
             columnId: "column_8",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Sr",
-                    accessor: "sr"
-                },
-                {
-                    Header: "Volume",
-                    accessor: "volume"
-                }
-            ]
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         }
     ];
     afterEach(cleanup);
@@ -254,10 +238,9 @@ describe("ColumnReordering unit test", () => {
     it("should not render ColumnReordering component", () => {
         render(
             <ColumnReordering
-                isManageColumnOpen={false}
-                toggleManageColumns={toggleManageColumns}
-                originalColumns={mockOriginalColumns}
-                isExpandContentAvailable
+                isManageColumnOverlayOpen={false}
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
                 additionalColumn={mockAdditionalColumn}
                 updateColumnStructure={mockUpdateColumnStructure}
             />,
@@ -270,27 +253,32 @@ describe("ColumnReordering unit test", () => {
     });
 
     it("should render ColumnReordering component", () => {
-        const component = render(
+        const { component, getByTestId } = render(
             <ColumnReordering
-                isManageColumnOpen
-                toggleManageColumns={toggleManageColumns}
-                originalColumns={mockOriginalColumns}
-                isExpandContentAvailable
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
                 additionalColumn={mockAdditionalColumn}
                 updateColumnStructure={mockUpdateColumnStructure}
             />,
             mockContainer
         );
-        expect(component).toBeDefined();
+        expect(mockContainer).toBeDefined();
+        const cancelButton = getByTestId("cancel_columnsManage");
+        // triggering Save button Click
+        act(() => {
+            cancelButton.dispatchEvent(
+                new MouseEvent("click", { bubbles: true })
+            );
+        });
     });
 
     it("should render ColumnReordering search component", () => {
         const { getByTestId } = render(
             <ColumnReordering
-                isManageColumnOpen
-                toggleManageColumns={toggleManageColumns}
-                originalColumns={mockOriginalColumns}
-                isExpandContentAvailable
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
                 additionalColumn={mockAdditionalColumn}
                 updateColumnStructure={mockUpdateColumnStructure}
             />
@@ -305,25 +293,28 @@ describe("ColumnReordering unit test", () => {
             .getElementsByClassName("column__reorder");
 
         expect(coloumnBodyInnerHtml.length).toBe(10);
+        const cancelButton = getByTestId("cancel_columnsManage");
+        // triggering Save button Click
+        act(() => {
+            cancelButton.dispatchEvent(
+                new MouseEvent("click", { bubbles: true })
+            );
+        });
     });
 
     it("Click on Save button For Default Select", () => {
-        render(
+        const { getByTestId } = render(
             <ColumnReordering
-                isManageColumnOpen
-                toggleManageColumns={toggleManageColumns}
-                originalColumns={mockOriginalColumns}
-                isExpandContentAvailable
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
                 additionalColumn={mockAdditionalColumn}
                 updateColumnStructure={mockUpdateColumnStructure}
             />,
             mockContainer
         );
 
-        const saveButton = document.getElementsByClassName(
-            "btns btns__save"
-        )[0];
-
+        const saveButton = getByTestId("save_columnsManage");
         // triggering Save button Click
         act(() => {
             saveButton.dispatchEvent(
@@ -337,16 +328,15 @@ describe("ColumnReordering unit test", () => {
         // expect the coloumn body (on showing all chosen coloumns) to be empty
         const { getByTestId } = render(
             <ColumnReordering
-                isManageColumnOpen
-                toggleManageColumns={toggleManageColumns}
-                originalColumns={mockOriginalColumns}
-                isExpandContentAvailable
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
                 additionalColumn={mockAdditionalColumn}
                 updateColumnStructure={mockUpdateColumnStructure}
             />,
             mockContainer
         );
-        const selectAllCheckBox = getByTestId("selectAllCheckbox");
+        const selectAllCheckBox = getByTestId("selectAllSearchableColumns");
 
         // unchecking the select all checkbox
         fireEvent.click(selectAllCheckBox);
@@ -358,24 +348,28 @@ describe("ColumnReordering unit test", () => {
             .getElementsByClassName("column__settings")[0]
             .getElementsByClassName("column__body")[0]
             .getElementsByClassName("column__reorder");
-
         expect(coloumnBodyInnerHtml.length).toBe(10);
+
+        const cancelButton = getByTestId("cancel_columnsManage");
+        // triggering Save button Click
+        act(() => {
+            cancelButton.dispatchEvent(
+                new MouseEvent("click", { bubbles: true })
+            );
+        });
     });
 
     it("UnSelect The Segment Coloumn From Column Chooser", () => {
-        act(() => {
-            ReactDOM.render(
-                <ColumnReordering
-                    isManageColumnOpen
-                    toggleManageColumns={toggleManageColumns}
-                    originalColumns={mockOriginalColumns}
-                    isExpandContentAvailable
-                    additionalColumn={mockAdditionalColumn}
-                    updateColumnStructure={mockUpdateColumnStructure}
-                />,
-                mockContainer
-            );
-        });
+        const { getByTestId } = render(
+            <ColumnReordering
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
+                additionalColumn={mockAdditionalColumn}
+                updateColumnStructure={mockUpdateColumnStructure}
+            />,
+            mockContainer
+        );
 
         const segmentColumCheckBox = document
             .getElementsByClassName("column__chooser")[0]
@@ -395,9 +389,7 @@ describe("ColumnReordering unit test", () => {
 
         expect(isSegmentIncludedInBody).toBe(false);
 
-        const saveButton = document.getElementsByClassName(
-            "btns btns__save"
-        )[0];
+        const saveButton = getByTestId("save_columnsManage");
 
         // triggering Save button Click
         act(() => {
@@ -408,21 +400,16 @@ describe("ColumnReordering unit test", () => {
     });
 
     it("UnSelect and Select Segment Column ", () => {
-        // LOGIC-->> UnSelect and then select segment Column
-        // expect no of coloumns to be as same before and after select
-        act(() => {
-            ReactDOM.render(
-                <ColumnReordering
-                    isManageColumnOpen
-                    toggleManageColumns={toggleManageColumns}
-                    originalColumns={mockOriginalColumns}
-                    isExpandContentAvailable
-                    additionalColumn={mockAdditionalColumn}
-                    updateColumnStructure={mockUpdateColumnStructure}
-                />,
-                mockContainer
-            );
-        });
+        const { getByTestId } = render(
+            <ColumnReordering
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
+                additionalColumn={mockAdditionalColumn}
+                updateColumnStructure={mockUpdateColumnStructure}
+            />,
+            mockContainer
+        );
 
         const noOfColoumnsBeforeSelect = document
             .getElementsByClassName("column__settings")[0]
@@ -454,22 +441,27 @@ describe("ColumnReordering unit test", () => {
             .getElementsByClassName("column__reorder").length;
 
         expect(noOfColoumnsAfterSelect).toEqual(noOfColoumnsBeforeSelect);
+
+        const cancelButton = getByTestId("cancel_columnsManage");
+        // triggering Save button Click
+        act(() => {
+            cancelButton.dispatchEvent(
+                new MouseEvent("click", { bubbles: true })
+            );
+        });
     });
 
     it("UnSelect and Select Remarks Column ", () => {
-        act(() => {
-            ReactDOM.render(
-                <ColumnReordering
-                    isManageColumnOpen
-                    toggleManageColumns={toggleManageColumns}
-                    originalColumns={mockOriginalColumns}
-                    isExpandContentAvailable
-                    additionalColumn={mockAdditionalColumn}
-                    updateColumnStructure={mockUpdateColumnStructure}
-                />,
-                mockContainer
-            );
-        });
+        const { getByTestId } = render(
+            <ColumnReordering
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
+                additionalColumn={mockAdditionalColumn}
+                updateColumnStructure={mockUpdateColumnStructure}
+            />,
+            mockContainer
+        );
 
         const noOfColoumnsBeforeSelect = document
             .getElementsByClassName("column__settings")[0]
@@ -501,15 +493,22 @@ describe("ColumnReordering unit test", () => {
             .getElementsByClassName("column__reorder").length;
 
         expect(noOfColoumnsAfterSelect).toEqual(noOfColoumnsBeforeSelect);
+
+        const cancelButton = getByTestId("cancel_columnsManage");
+        // triggering Save button Click
+        act(() => {
+            cancelButton.dispatchEvent(
+                new MouseEvent("click", { bubbles: true })
+            );
+        });
     });
 
     it("Unselect and Select Flight no Inner Cell", () => {
-        const { container } = render(
+        const { container, getByTestId } = render(
             <ColumnReordering
-                isManageColumnOpen
-                toggleManageColumns={toggleManageColumns}
-                originalColumns={mockOriginalColumns}
-                isExpandContentAvailable
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
                 additionalColumn={mockAdditionalColumn}
                 updateColumnStructure={mockUpdateColumnStructure}
             />
@@ -529,22 +528,27 @@ describe("ColumnReordering unit test", () => {
             );
         });
         expect(flightNoInnerCell.checked).toBeTruthy();
+
+        const cancelButton = getByTestId("cancel_columnsManage");
+        // triggering Save button Click
+        act(() => {
+            cancelButton.dispatchEvent(
+                new MouseEvent("click", { bubbles: true })
+            );
+        });
     });
 
     it("UnSelect All and Click Reset Button without columns to expand", () => {
-        act(() => {
-            ReactDOM.render(
-                <ColumnReordering
-                    isManageColumnOpen
-                    toggleManageColumns={toggleManageColumns}
-                    originalColumns={mockOriginalColumns}
-                    isExpandContentAvailable={false}
-                    additionalColumn={mockAdditionalColumn}
-                    updateColumnStructure={mockUpdateColumnStructure}
-                />,
-                mockContainer
-            );
-        });
+        const { getByTestId } = render(
+            <ColumnReordering
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
+                additionalColumn={mockAdditionalColumn}
+                updateColumnStructure={mockUpdateColumnStructure}
+            />,
+            mockContainer
+        );
         const selectAllCheckBox = document
             .getElementsByClassName("column__chooser")[0]
             .getElementsByClassName("column__body")[0]
@@ -555,9 +559,7 @@ describe("ColumnReordering unit test", () => {
                 new MouseEvent("click", { bubbles: true })
             );
         });
-        const resetButton = document
-            .getElementsByClassName("column__settings")[0]
-            .getElementsByClassName("btns")[0];
+        const resetButton = document.getElementsByTagName("button")[0];
         // clicking Reset button
         act(() => {
             resetButton.dispatchEvent(
@@ -569,23 +571,28 @@ describe("ColumnReordering unit test", () => {
             .getElementsByClassName("column__body")[0]
             .getElementsByClassName("column__reorder").length;
 
-        expect(noOfColoumnsAfterReset).toEqual(9);
+        expect(noOfColoumnsAfterReset).toEqual(10);
+
+        const cancelButton = getByTestId("cancel_columnsManage");
+        // triggering Save button Click
+        act(() => {
+            cancelButton.dispatchEvent(
+                new MouseEvent("click", { bubbles: true })
+            );
+        });
     });
 
     it("Error scenario for no Coloumns Selected", () => {
-        act(() => {
-            ReactDOM.render(
-                <ColumnReordering
-                    isManageColumnOpen
-                    toggleManageColumns={toggleManageColumns}
-                    originalColumns={mockOriginalColumns}
-                    isExpandContentAvailable
-                    additionalColumn={mockAdditionalColumn}
-                    updateColumnStructure={mockUpdateColumnStructure}
-                />,
-                mockContainer
-            );
-        });
+        const { getAllByTestId, getByTestId } = render(
+            <ColumnReordering
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
+                additionalColumn={mockAdditionalColumn}
+                updateColumnStructure={mockUpdateColumnStructure}
+            />,
+            mockContainer
+        );
 
         const selectAllCheckBox = document
             .getElementsByClassName("column__chooser")[0]
@@ -599,10 +606,7 @@ describe("ColumnReordering unit test", () => {
         });
 
         expect(selectAllCheckBox.checked).toBeFalsy();
-
-        const saveButton = document.getElementsByClassName(
-            "btns btns__save"
-        )[0];
+        const saveButton = getByTestId("save_columnsManage");
 
         // un-checking selectAll checkbox
         act(() => {
@@ -613,12 +617,11 @@ describe("ColumnReordering unit test", () => {
     });
 
     it("Select InnerCell Of Remarks", () => {
-        const { container } = render(
+        const { container, getByTestId } = render(
             <ColumnReordering
-                isManageColumnOpen
-                toggleManageColumns={toggleManageColumns}
-                originalColumns={mockOriginalColumns}
-                isExpandContentAvailable
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
                 additionalColumn={mockAdditionalColumn}
                 updateColumnStructure={mockUpdateColumnStructure}
             />
@@ -636,19 +639,15 @@ describe("ColumnReordering unit test", () => {
     });
 
     it("Trigger search of columns onChnage", () => {
-        act(() => {
-            ReactDOM.render(
-                <ColumnReordering
-                    isManageColumnOpen
-                    toggleManageColumns={toggleManageColumns}
-                    originalColumns={mockOriginalColumns}
-                    isExpandContentAvailable
-                    additionalColumn={mockAdditionalColumn}
-                    updateColumnStructure={mockUpdateColumnStructure}
-                />,
-                mockContainer
-            );
-        });
+        const { container, getByTestId } = render(
+            <ColumnReordering
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
+                additionalColumn={mockAdditionalColumn}
+                updateColumnStructure={mockUpdateColumnStructure}
+            />
+        );
 
         const searchColoumnInputField = document
             .getElementsByClassName("column__chooser")[0]
@@ -670,12 +669,11 @@ describe("ColumnReordering unit test", () => {
             Object.assign(event, props);
             return event;
         };
-        const { getAllByTestId } = render(
+        const { getAllByTestId, getByTestId } = render(
             <ColumnReordering
-                isManageColumnOpen
-                toggleManageColumns={toggleManageColumns}
-                originalColumns={mockOriginalColumns}
-                isExpandContentAvailable
+                isManageColumnOverlayOpen
+                toggleManageColumnsOverlay={toggleManageColumnsOverlay}
+                columns={mockOriginalColumns}
                 additionalColumn={mockAdditionalColumn}
                 updateColumnStructure={mockUpdateColumnStructure}
             />

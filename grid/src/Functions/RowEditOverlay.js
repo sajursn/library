@@ -7,7 +7,6 @@ import RowEditTag from "./RowEditTag";
 const RowEditOverLay = ({
     row,
     columns,
-    isRowExpandEnabled,
     additionalColumn,
     getRowEditOverlay,
     closeRowEditOverlay,
@@ -38,8 +37,7 @@ const RowEditOverLay = ({
         <RowEditContext.Provider
             value={{
                 columns,
-                additionalColumn,
-                isRowExpandEnabled
+                additionalColumn
             }}
         >
             <ClickAwayListener
@@ -48,10 +46,10 @@ const RowEditOverLay = ({
                 onClickAway={closeRowEditOverlay}
             >
                 {rowEditContent}
-                <div className="cancel-save-buttons">
+                <div className="btn-wrap">
                     <button
                         type="button"
-                        className="save-Button"
+                        className="neo-btn neo-btn-primary btn btn-secondary"
                         data-testid="rowEditOverlay-save"
                         onClick={saveRowEdit}
                     >
@@ -59,7 +57,7 @@ const RowEditOverLay = ({
                     </button>
                     <button
                         type="button"
-                        className="cancel-Button"
+                        className="neo-btn neo-btn-default btn btn-secondary"
                         data-testid="rowEditOverlay-cancel"
                         onClick={closeRowEditOverlay}
                     >
@@ -73,7 +71,6 @@ const RowEditOverLay = ({
 RowEditOverLay.propTypes = {
     row: PropTypes.object,
     columns: PropTypes.arrayOf(PropTypes.object),
-    isRowExpandEnabled: PropTypes.bool,
     additionalColumn: PropTypes.object,
     getRowEditOverlay: PropTypes.func,
     closeRowEditOverlay: PropTypes.func,

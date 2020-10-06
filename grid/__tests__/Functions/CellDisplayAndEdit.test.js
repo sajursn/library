@@ -52,15 +52,25 @@ describe("CellDisplayAndEdit unit test", () => {
             depth: 0,
             displayCell: mockDisplayCell,
             editCell: mockEditCell,
+            display: true,
+            isSearchable: true,
             innerCells: [
-                { Header: "Flight No", accessor: "flightno" },
-                { Header: "Date", accessor: "date" }
+                {
+                    Header: "Flight No",
+                    accessor: "flightno",
+                    display: true,
+                    cellId: "column_1_cell_0",
+                    isSearchable: true
+                },
+                {
+                    Header: "Date",
+                    accessor: "date",
+                    display: true,
+                    cellId: "column_1_cell_1",
+                    isSearchable: true
+                }
             ],
-            isVisible: true,
-            originalInnerCells: [
-                { Header: "Flight No", accessor: "flightno" },
-                { Header: "Date", accessor: "date" }
-            ]
+            isVisible: true
         },
         row: {
             original: {
@@ -90,15 +100,25 @@ describe("CellDisplayAndEdit unit test", () => {
             depth: 0,
             displayCell: mockDisplayCell,
             editCell: mockEditCell,
+            isSearchable: true,
             innerCells: [
-                { Header: "Flight No", accessor: "flightno" },
-                { Header: "Date", accessor: "date" }
+                {
+                    Header: "Flight No",
+                    accessor: "flightno",
+                    display: true,
+                    cellId: "column_1_cell_0",
+                    isSearchable: true
+                },
+                {
+                    Header: "Date",
+                    accessor: "date",
+                    display: true,
+                    cellId: "column_1_cell_1",
+                    isSearchable: true
+                }
             ],
             isVisible: true,
-            originalInnerCells: [
-                { Header: "Flight No", accessor: "flightno" },
-                { Header: "Date", accessor: "date" }
-            ]
+            display: true
         }
     };
 
@@ -107,19 +127,28 @@ describe("CellDisplayAndEdit unit test", () => {
             Header: "Flight",
             accessor: "flight",
             width: 100,
+            columnId: "column_1",
             innerCells: [
                 {
                     Header: "Flight No",
-                    accessor: "flightno"
+                    accessor: "flightno",
+                    display: true,
+                    cellId: "column_1_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Date",
-                    accessor: "date"
+                    accessor: "date",
+                    display: true,
+                    cellId: "column_1_cell_1",
+                    isSearchable: true
                 }
             ],
+            isSearchable: true,
             sortValue: "flightno",
             displayCell: mockDisplayCell,
-            editCell: mockEditCell
+            editCell: mockEditCell,
+            display: true
         }
     ];
 
@@ -193,7 +222,7 @@ describe("CellDisplayAndEdit unit test", () => {
                 new MouseEvent("click", { bubbles: true })
             );
         });
-        fireEvent.click(component.getByTestId("cancel"));
+        fireEvent.click(component.getByTestId("cell-edit-cancel"));
     });
     it("should save values in edit option by clicking on save button after making value change", () => {
         const { getByTestId } = render(
@@ -218,7 +247,7 @@ describe("CellDisplayAndEdit unit test", () => {
         const setState = jest.fn(() => editedRowValue);
         const useStateSpy = jest.spyOn(React, "useState");
         useStateSpy.mockImplementation(() => [editedRowValue, setState]);
-        fireEvent.click(getByTestId("ok"));
+        fireEvent.click(getByTestId("cell-edit-save"));
     });
     it("should not render component", () => {
         act(() => {

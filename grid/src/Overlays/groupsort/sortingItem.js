@@ -8,7 +8,7 @@ import { IconNav, SortCopy, SortDelete } from "../../Utilities/SvgUtilities";
 const SortItem = ({
     id,
     sortOption,
-    originalColumns,
+    columns,
     moveSort,
     findSort,
     updateSingleSortingOption,
@@ -45,7 +45,7 @@ const SortItem = ({
     });
 
     const getInncerCellsOfColumn = (columnAccessor) => {
-        const origCol = originalColumns.find((column) => {
+        const origCol = columns.find((column) => {
             return column.accessor === columnAccessor;
         });
         if (origCol && origCol.innerCells) {
@@ -118,7 +118,7 @@ const SortItem = ({
                         onChange={changeSortByOptions}
                         value={sortOption.sortBy}
                     >
-                        {originalColumns.map((orgItem) => (
+                        {columns.map((orgItem) => (
                             <option
                                 key={orgItem.columnId}
                                 value={orgItem.accessor}
@@ -197,7 +197,7 @@ const SortItem = ({
 SortItem.propTypes = {
     id: PropTypes.number,
     sortOption: PropTypes.object,
-    originalColumns: PropTypes.arrayOf(PropTypes.object),
+    columns: PropTypes.arrayOf(PropTypes.object),
     moveSort: PropTypes.func,
     findSort: PropTypes.func,
     updateSingleSortingOption: PropTypes.func,

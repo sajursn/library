@@ -71,16 +71,19 @@ const columns = [
         innerCells: [
             {
                 Header: "Flight No",
-                accessor: "flightno"
+                accessor: "flightno",
+                isSearchable: true
             },
             {
                 Header: "Date",
-                accessor: "date"
+                accessor: "date",
+                isSearchable: true
             }
         ],
         sortValue: "flightno",
         displayCell: mockFlightDisplayCell,
-        editCell: mockFlightEditCell
+        editCell: mockFlightEditCell,
+        isSearchable: true
     },
     {
         Header: "Segment",
@@ -89,14 +92,17 @@ const columns = [
         innerCells: [
             {
                 Header: "From",
-                accessor: "from"
+                accessor: "from",
+                isSearchable: true
             },
             {
                 Header: "To",
-                accessor: "to"
+                accessor: "to",
+                isSearchable: true
             }
         ],
-        displayCell: mockSegmentDisplayCell
+        displayCell: mockSegmentDisplayCell,
+        isSearchable: true
     }
 ];
 const additionalColumn = {

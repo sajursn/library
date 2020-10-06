@@ -5,13 +5,8 @@ import CellDisplayAndEditTag from "./CellDisplayAndEditTag";
 import { CellDisplayAndEditContext } from "../Utilities/TagsContext";
 import { IconPencil, IconTick, IconCancel } from "../Utilities/SvgUtilities";
 
-const CellDisplayAndEdit = ({
-    row,
-    columns,
-    updateRowInGrid,
-    expandableColumn
-}) => {
-    const { column } = row;
+const CellDisplayAndEdit = ({ row, updateRowInGrid, expandableColumn }) => {
+    const { column, columns } = row;
     if (column && row.row) {
         const { original, isExpanded } = row.row;
         const [isEditOpen, setIsEditOpen] = useState(false);
@@ -55,6 +50,7 @@ const CellDisplayAndEdit = ({
             : null;
         const columnsToPass = columns;
         const columnToPass = column;
+
         return (
             <CellDisplayAndEditContext.Provider
                 value={{ columns: columnsToPass, column: columnToPass }}
@@ -81,8 +77,8 @@ const CellDisplayAndEdit = ({
                             <button
                                 type="button"
                                 aria-label="Cell Edit Save Button"
-                                className="ok"
-                                data-testid="ok"
+                                className="neo-btn neo-btn-primary btn btn-secondary"
+                                data-testid="cell-edit-save"
                                 onClick={saveEdit}
                             >
                                 <IconTick />
@@ -90,8 +86,8 @@ const CellDisplayAndEdit = ({
                             <button
                                 type="button"
                                 aria-label="Cell Edit Cancel Button"
-                                className="cancel"
-                                data-testid="cancel"
+                                className="neo-btn neo-btn-default btn btn-secondary"
+                                data-testid="cell-edit-cancel"
                                 onClick={closeEdit}
                             >
                                 <IconCancel />
@@ -107,7 +103,6 @@ const CellDisplayAndEdit = ({
 
 CellDisplayAndEdit.propTypes = {
     row: PropTypes.object,
-    columns: PropTypes.arrayOf(PropTypes.object),
     updateRowInGrid: PropTypes.func,
     expandableColumn: PropTypes.bool
 };

@@ -6,12 +6,12 @@ import { IconJustify } from "../../Utilities/SvgUtilities";
 
 const ColumnItem = ({
     id,
-    Header,
+    columnHeader,
     moveColumn,
     findColumn,
-    originalInnerCells,
-    isInnerCellSelected,
-    selectInnerCells
+    isadditionalcolumn,
+    innerCells,
+    onInnerCellChange
 }) => {
     const originalIndex = findColumn(id).index;
 
@@ -57,29 +57,35 @@ const ColumnItem = ({
                         <IconJustify />
                     </i>
                 </div>
-                <div className="columnItem__Header">{Header}</div>
+                <div className="columnItem__Header">{columnHeader}</div>
                 <div className="column__innerCells__wrap">
-                    {originalInnerCells && originalInnerCells.length > 0
-                        ? originalInnerCells.map((cell) => {
+                    {innerCells && innerCells.length > 0
+                        ? innerCells.map((cell) => {
+                              const { cellId, Header, display } = cell;
                               return (
-                                  <div
-                                      className="column__wrap"
-                                      key={`${cell.Header}_${cell.accessor}`}
-                                  >
+                                  <div className="column__wrap" key={cellId}>
                                       <div className="column__checkbox">
-                                          <input
-                                              type="checkbox"
-                                              data-columnheader={Header}
-                                              value={cell.Header}
-                                              checked={isInnerCellSelected(
-                                                  Header,
-                                                  cell.Header
-                                              )}
-                                              onChange={selectInnerCells}
-                                          />
-                                      </div>
-                                      <div className="column__txt">
-                                          {cell.Header}
+                                          <div className="form-check">
+                                              <input
+                                                  type="checkbox"
+                                                  id={`chk_selectInnerCell_${cellId}`}
+                                                  className="form-check-input custom-checkbox form-check-input"
+                                                  data-testid={`selectInnerCell_${id}_${cellId}`}
+                                                  data-columnid={id}
+                                                  data-cellid={cellId}
+                                                  data-isadditionalcolumn={
+                                                      isadditionalcolumn
+                                                  }
+                                                  checked={display}
+                                                  onChange={onInnerCellChange}
+                                              />
+                                              <label
+                                                  htmlFor={`chk_selectInnerCell_${cellId}`}
+                                                  className="form-check-label"
+                                              >
+                                                  {Header}
+                                              </label>
+                                          </div>
                                       </div>
                                   </div>
                               );
@@ -93,12 +99,12 @@ const ColumnItem = ({
 
 ColumnItem.propTypes = {
     id: PropTypes.string,
-    Header: PropTypes.string,
+    columnHeader: PropTypes.string,
     moveColumn: PropTypes.func,
     findColumn: PropTypes.func,
-    originalInnerCells: PropTypes.arrayOf(PropTypes.object),
-    isInnerCellSelected: PropTypes.func,
-    selectInnerCells: PropTypes.func
+    isadditionalcolumn: PropTypes.bool,
+    innerCells: PropTypes.arrayOf(PropTypes.object),
+    onInnerCellChange: PropTypes.func
 };
 
 export default ColumnItem;

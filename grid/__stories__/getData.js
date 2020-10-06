@@ -1,9 +1,8 @@
-export const fetchData = async (index, pageSize) => {
-    const pageNumber = Math.floor(index / pageSize) + 1;
-
+export const fetchData = async (pageInfo) => {
+    const { pageNum, pageSize } = pageInfo;
     const response = await fetch(
         // `https://skyforceapi.azurewebsites.net/api/cargoflightdetails?currentPage=${pageNumber}&pageSize=${pageSize}`
-        `https://sxgfhbcma2.execute-api.us-east-2.amazonaws.com/default/cargoFlightList?currentPage=${pageNumber}&pageSize=${pageSize}`
+        `https://sxgfhbcma2.execute-api.us-east-2.amazonaws.com/default/cargoFlightList?currentPage=${pageNum}&pageSize=${pageSize}`
     )
         .then((resp) => resp.json()) // Transform the data into json
         .then(function (res) {

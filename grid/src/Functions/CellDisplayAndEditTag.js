@@ -10,7 +10,7 @@ const CellDisplayAndEditTag = (props) => {
 
     if (columns && columnKey) {
         const selectedColumn = columns.find(
-            (col) => col.accessor === columnKey
+            (col) => col.id === columnKey && col.display === true
         );
         if (checkInnerCells(selectedColumn, cellKey)) {
             return (
@@ -19,7 +19,7 @@ const CellDisplayAndEditTag = (props) => {
                 </React.Fragment>
             );
         }
-    } else if (cellKey) {
+    } else if (column.display === true && cellKey) {
         if (checkInnerCells(column, cellKey)) {
             return (
                 <React.Fragment key="CellDisplayAndEditFragment">

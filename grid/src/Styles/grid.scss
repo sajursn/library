@@ -5,9 +5,15 @@
 
 .neo-grid {
     .table {
-        border-top: 1px solid var(--border-table);
+        border-top: 1px solid var(--border-grey);
+        .row-selector-cell-container {
+            .form-check {
+                align-items: flex-start;
+            }
+        }
     }
     .table-row--head {
+        background: var(--secondary);
         .table-cell {
             padding: 10px 5px;
         }
@@ -18,10 +24,10 @@
         }
     }
     .table-row {
-        border-bottom: 1px solid var(--border-table);
+        border-bottom: 1px solid var(--border-grey);
         flex-wrap: wrap;
         &:last-child {
-            margin-bottom: 50px;
+            margin-bottom: rem(50);
         }
     }
     .table-row-wrap {
@@ -36,19 +42,18 @@
             }
         }
         &.column-heading {
-            background: #f4f7f9;
             color: #204d6f;
             vertical-align: top;
             font-weight: bold;
             border-left: 1px solid transparent;
             border-right: 1px solid transparent;
             &:hover {
-                border-left: 1px solid var(--border-table);
-                border-right: 1px solid var(--border-table);
+                border-left: 1px solid var(--border-grey);
+                border-right: 1px solid var(--border-grey);
             }
             &:last-child {
                 padding: 0;
-                width: 53px !important;
+                width: rem(53) !important;
             }
             .txt-wrap {
                 display: none;
@@ -104,7 +109,7 @@
     .icon-row-options {
         position: relative;
         cursor: pointer;
-        width: 15px;
+        width: rem(15);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -125,18 +130,18 @@
         width: auto;
         right: 0;
         top: 0;
-        padding: 15px 10px;
-        margin-bottom: 40px;
+        padding: rem(15) rem(10);
+        margin-bottom: rem(40);
         z-index: 9;
         white-space: nowrap;
         li {
-            margin-bottom: 13px;
+            margin-bottom: rem(13);
             cursor: pointer;
             &:last-child {
                 margin: 0;
             }
             i {
-                width: 14px;
+                width: rem(14);
                 display: inline-block;
                 &.default {
                     position: relative;
@@ -161,7 +166,7 @@
             position: absolute;
             top: 5px;
             right: 5px;
-            font-size: 15px;
+            font-size: rem(15);
             color: #ccc;
             cursor: pointer;
         }
@@ -196,45 +201,5 @@
         width: auto;
         white-space: nowrap;
         box-shadow: 0px 0px 8px 0px var(--box-shadow);
-        input,
-        select {
-            display: inline-block;
-            height: 23px;
-            width: 120px;
-            border-radius: 3px;
-            border: var(--light-grey) solid 1px;
-            padding: 2px;
-            font-size: 12px;
-            margin-right: 5px;
-        }
-        select {
-            height: 29px;
-        }
-        .ok {
-            width: 27px;
-            height: 27px;
-            background: #169bd5;
-            border: #169bd5 solid 1px;
-            border-radius: 4px;
-            margin: 0 5px;
-            position: relative;
-            cursor: pointer;
-            svg {
-                vertical-align: middle;
-            }
-        }
-        .cancel {
-            width: 27px;
-            height: 27px;
-            background: #fff;
-            border: #d3d3d3 solid 1px;
-            border-radius: 4px;
-            margin: 0 5px;
-            position: relative;
-            cursor: pointer;
-            svg {
-                vertical-align: middle;
-            }
-        }
     }
 }

@@ -20,11 +20,18 @@
         color: var(--danger);
     }
     .txt {
-        height: 25px;
+        height: rem(32);
         border-radius: 3px;
         padding: 1px 0 0 3px;
         font-size: rem(12);
         color: #000;
         border: var(--border-grey) solid 1px;
+        box-sizing: border-box;
+    }
+    input[type="checkbox"].custom-checkbox.custom-checkbox {
+        margin-bottom: 0;
+    }
+    .form-check {
+        height: auto;
     }
 }

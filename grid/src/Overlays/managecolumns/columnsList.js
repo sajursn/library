@@ -6,27 +6,22 @@ import { ItemTypes } from "./ItemTypes";
 import ColumnItem from "./columnItem";
 
 const ColumnsList = (props) => {
-    const {
-        updateColumnsInState,
-        columnsToManage,
-        isInnerCellSelected,
-        selectInnerCells
-    } = props;
+    const { onColumnReorder, managedColumns, onInnerCellChange } = props;
 
     const findColumn = (columnId) => {
-        const column = columnsToManage.filter(
+        const column = managedColumns.filter(
             (c) => `${c.columnId}` === columnId
         )[0];
         return {
             column,
-            index: columnsToManage.indexOf(column)
+            index: managedColumns.indexOf(column)
         };
     };
 
     const moveColumn = (columnId, atIndex) => {
         const { column, index } = findColumn(columnId);
-        updateColumnsInState(
-            update(columnsToManage, {
+        onColumnReorder(
+            update(managedColumns, {
                 $splice: [
                     [index, 1],
                     [atIndex, 0, column]
@@ -37,20 +32,30 @@ const ColumnsList = (props) => {
 
     const [, drop] = useDrop({ accept: ItemTypes.COLUMN });
 
+    const filteredManagedColumns = managedColumns.filter((column) => {
+        return column.display === true;
+    });
+
     return (
         <React.Fragment key="ColumnManageFragment">
             <div ref={drop} style={{ display: "flex", flexWrap: "wrap" }}>
-                {columnsToManage.map((column) => {
+                {filteredManagedColumns.map((column) => {
+                    const {
+                        columnId,
+                        Header,
+                        isDisplayInExpandedRegion,
+                        innerCells
+                    } = column;
                     return (
                         <ColumnItem
-                            key={column.columnId}
-                            id={`${column.columnId}`}
-                            Header={`${column.Header}`}
+                            key={columnId}
+                            id={columnId}
                             moveColumn={moveColumn}
                             findColumn={findColumn}
-                            originalInnerCells={column.originalInnerCells}
-                            isInnerCellSelected={isInnerCellSelected}
-                            selectInnerCells={selectInnerCells}
+                            columnHeader={Header}
+                            isadditionalcolumn={isDisplayInExpandedRegion}
+                            innerCells={innerCells}
+                            onInnerCellChange={onInnerCellChange}
                         />
                     );
                 })}
@@ -60,10 +65,9 @@ const ColumnsList = (props) => {
 };
 
 ColumnsList.propTypes = {
-    updateColumnsInState: PropTypes.func,
-    columnsToManage: PropTypes.arrayOf(PropTypes.object),
-    isInnerCellSelected: PropTypes.func,
-    selectInnerCells: PropTypes.func
+    onColumnReorder: PropTypes.func,
+    managedColumns: PropTypes.arrayOf(PropTypes.object),
+    onInnerCellChange: PropTypes.func
 };
 
 export default ColumnsList;

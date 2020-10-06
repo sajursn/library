@@ -5,7 +5,6 @@ import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import MultiBackend, { TouchTransition } from "react-dnd-multi-backend";
-import ColumnItem from "../../../src/Overlays/managecolumns/columnItem";
 import ColumnsList from "../../../src/Overlays/managecolumns/columnsList";
 import "@testing-library/jest-dom/extend-expect";
 
@@ -30,7 +29,8 @@ const managedColumns = [
         width: 50,
         disableFilters: true,
         columnId: "column_0",
-        displayInExpandedRegion: false
+        isDisplayInExpandedRegion: false,
+        display: true
     },
     {
         Header: "Flight",
@@ -39,59 +39,37 @@ const managedColumns = [
         innerCells: [
             {
                 Header: "Flight No",
-                accessor: "flightno"
+                accessor: "flightno",
+                display: true,
+                cellId: "column_1_cell_0",
+                isSearchable: true
             },
             {
                 Header: "Date",
-                accessor: "date"
+                accessor: "date",
+                display: true,
+                cellId: "column_1_cell_1",
+                isSearchable: true
             }
         ],
         sortValue: "flightno",
         columnId: "column_1",
-        displayInExpandedRegion: false,
-        originalInnerCells: [
-            {
-                Header: "Flight No",
-                accessor: "flightno"
-            },
-            {
-                Header: "Date",
-                accessor: "date"
-            }
-        ]
+        isDisplayInExpandedRegion: false,
+        display: true,
+        isSearchable: true
     }
 ];
 const updateColumnsInState = jest.fn();
-const isInnerCellSelected = jest.fn();
 const selectInnerCells = jest.fn();
-const data = {
-    id: "column_1",
-    Header: "Flight",
-    moveColumn: jest.fn(),
-    findColumn: jest.fn(() => 1),
-    originalInnerCells: [
-        {
-            Header: "Flight No",
-            accessor: "flightno"
-        },
-        {
-            Header: "Date",
-            accessor: "date"
-        }
-    ],
-    isInnerCellSelected: jest.fn(),
-    selectInnerCells: jest.fn()
-};
 
 describe("render ColumnItem", () => {
     it("should renders parent component", () => {
         const { getByText, container } = render(
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <ColumnsList
-                    columnsToManage={managedColumns}
-                    updateColumnsInState={updateColumnsInState}
-                    isInnerCellSelected={isInnerCellSelected}
-                    selectInnerCells={selectInnerCells}
+                    managedColumns={managedColumns}
+                    onColumnReorder={updateColumnsInState}
+                    onInnerCellChange={selectInnerCells}
                 />
             </DndProvider>
         );
@@ -108,10 +86,9 @@ describe("render ColumnItem", () => {
         const { getAllByTestId } = render(
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <ColumnsList
-                    columnsToManage={managedColumns}
-                    updateColumnsInState={updateColumnsInState}
-                    isInnerCellSelected={isInnerCellSelected}
-                    selectInnerCells={selectInnerCells}
+                    managedColumns={managedColumns}
+                    onColumnReorder={updateColumnsInState}
+                    onInnerCellChange={selectInnerCells}
                 />
             </DndProvider>
         );
@@ -135,10 +112,9 @@ describe("render ColumnItem", () => {
         const { getAllByTestId } = render(
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <ColumnsList
-                    columnsToManage={managedColumns}
-                    updateColumnsInState={updateColumnsInState}
-                    isInnerCellSelected={isInnerCellSelected}
-                    selectInnerCells={selectInnerCells}
+                    managedColumns={managedColumns}
+                    onColumnReorder={updateColumnsInState}
+                    onInnerCellChange={selectInnerCells}
                 />
             </DndProvider>
         );
@@ -148,22 +124,5 @@ describe("render ColumnItem", () => {
             createBubbledEvent("dragstart", { clientX: 0, clientY: 0 })
         );
         fireEvent.dragEnd(startingNode);
-    });
-
-    it("should renders child component", () => {
-        const { container } = render(
-            <DndProvider
-                backend={MultiBackend}
-                options={HTML5toTouch}
-                columnsToManage={managedColumns}
-                updateColumnsInState={updateColumnsInState}
-                isInnerCellSelected={isInnerCellSelected}
-                selectInnerCells={selectInnerCells}
-            >
-                <ColumnItem {...data} />
-            </DndProvider>
-        );
-        const childComponent = container.querySelector("div");
-        expect(childComponent).toBeInTheDocument();
     });
 });

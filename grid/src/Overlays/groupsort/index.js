@@ -13,15 +13,15 @@ const GroupSort = (props) => {
         isGroupSortOverLayOpen,
         toggleGroupSortOverLay,
         applyGroupSort,
-        originalColumns
+        columns
     } = props;
 
     const sortingOrders = ["Ascending", "Descending"];
     const defaultSortingOption = [
         {
-            sortBy: originalColumns[0].accessor,
-            sortOn: originalColumns[0].innerCells
-                ? originalColumns[0].innerCells[0].accessor
+            sortBy: columns[0].accessor,
+            sortOn: columns[0].innerCells
+                ? columns[0].innerCells[0].accessor
                 : "value",
             order: sortingOrders[0]
         }
@@ -137,7 +137,7 @@ const GroupSort = (props) => {
                         >
                             <SortingList
                                 sortOptions={sortOptions}
-                                originalColumns={originalColumns}
+                                columns={columns}
                                 updateSortingOptions={updateSortingOptions}
                                 updateSingleSortingOption={
                                     updateSingleSortingOption
@@ -159,21 +159,25 @@ const GroupSort = (props) => {
                             onClick={addSortingOptions}
                         >
                             <span>+</span>
-                            <div className="sort__txt">New Sort</div>
+                            <div className="sort__txt" data-testid="addSort">
+                                New Sort
+                            </div>
                         </div>
                     </div>
                     <div className="sort__footer">
                         <div className="sort__btns">
                             <button
                                 type="button"
-                                className="btns"
+                                data-testid="clearSort"
+                                className="neo-btn neo-btn-link btn btn-secondary"
                                 onClick={clearSortingOptions}
                             >
                                 Clear All
                             </button>
                             <button
                                 type="button"
-                                className="btns btns__save"
+                                data-testid="saveSort"
+                                className="neo-btn neo-btn-primary btn btn-secondary"
                                 onClick={applySort}
                             >
                                 Ok
@@ -190,7 +194,7 @@ const GroupSort = (props) => {
 GroupSort.propTypes = {
     isGroupSortOverLayOpen: PropTypes.bool,
     toggleGroupSortOverLay: PropTypes.func,
-    originalColumns: PropTypes.arrayOf(PropTypes.object),
+    columns: PropTypes.arrayOf(PropTypes.object),
     applyGroupSort: PropTypes.func
 };
 

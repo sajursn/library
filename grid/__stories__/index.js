@@ -35,15 +35,16 @@ const GridComponent = (props) => {
     const urlPageSize = search
         ? parseInt(search.replace("?pagesize=", ""), 10)
         : NaN;
-    const pageSize = !Number.isNaN(urlPageSize) ? Number(urlPageSize) : 300;
-    // State for holding index value for API call
-    const [index, setIndex] = useState(0);
+    const gridPageSize = !Number.isNaN(urlPageSize) ? Number(urlPageSize) : 300;
+    // State for holding page info
+    const [pageInfo, setPageInfo] = useState({
+        pageNum: 1,
+        pageSize: gridPageSize,
+        total: 20000,
+        lastPage: isNextPageAvailableCheck !== true
+    });
     // State for holding grid data
     const [gridData, setGridData] = useState([]);
-    // State for notifying if next page is available or not
-    const [isNextPageAvailable, setIsNextPageAvailable] = useState(
-        isNextPageAvailableCheck
-    );
     // State for holding selected rows
     const [userSelectedRows, setUserSelectedRows] = useState([]);
     // State for holding rows to deselect
@@ -112,6 +113,7 @@ const GridComponent = (props) => {
             accessor: "travelId",
             width: 50,
             disableFilters: true,
+            isSearchable: true,
             displayCell: (rowData) => {
                 const { travelId } = rowData;
                 return (
@@ -128,14 +130,17 @@ const GridComponent = (props) => {
             innerCells: [
                 {
                     Header: "Flight No",
-                    accessor: "flightno"
+                    accessor: "flightno",
+                    isSearchable: false
                 },
                 {
                     Header: "Date",
-                    accessor: "date"
+                    accessor: "date",
+                    isSearchable: false
                 }
             ],
             sortValue: "flightno",
+            isSearchable: true,
             displayCell: (rowData, DisplayTag) => {
                 const { flightno, date } = rowData.flight;
                 return (
@@ -166,14 +171,17 @@ const GridComponent = (props) => {
             innerCells: [
                 {
                     Header: "From",
-                    accessor: "from"
+                    accessor: "from",
+                    isSearchable: true
                 },
                 {
                     Header: "To",
-                    accessor: "to"
+                    accessor: "to",
+                    isSearchable: true
                 }
             ],
             disableSortBy: true,
+            isSearchable: false,
             displayCell: (rowData, DisplayTag) => {
                 const { from, to } = rowData.segment;
                 return (
@@ -209,38 +217,47 @@ const GridComponent = (props) => {
             innerCells: [
                 {
                     Header: "Flight Model",
-                    accessor: "flightModel"
+                    accessor: "flightModel",
+                    isSearchable: true
                 },
                 {
                     Header: "Body Type",
-                    accessor: "bodyType"
+                    accessor: "bodyType",
+                    isSearchable: true
                 },
                 {
                     Header: "Type",
-                    accessor: "type"
+                    accessor: "type",
+                    isSearchable: true
                 },
                 {
                     Header: "Start Time",
-                    accessor: "startTime"
+                    accessor: "startTime",
+                    isSearchable: true
                 },
                 {
                     Header: "End Time",
-                    accessor: "endTime"
+                    accessor: "endTime",
+                    isSearchable: true
                 },
                 {
                     Header: "Status",
-                    accessor: "status"
+                    accessor: "status",
+                    isSearchable: true
                 },
                 {
                     Header: "Additional Status",
-                    accessor: "additionalStatus"
+                    accessor: "additionalStatus",
+                    isSearchable: true
                 },
                 {
                     Header: "Time Status",
-                    accessor: "timeStatus"
+                    accessor: "timeStatus",
+                    isSearchable: true
                 }
             ],
             disableSortBy: true,
+            isSearchable: true,
             displayCell: (rowData, DisplayTag, isExpanded) => {
                 const {
                     startTime,
@@ -413,14 +430,17 @@ const GridComponent = (props) => {
             innerCells: [
                 {
                     Header: "Percentage",
-                    accessor: "percentage"
+                    accessor: "percentage",
+                    isSearchable: true
                 },
                 {
                     Header: "Value",
-                    accessor: "value"
+                    accessor: "value",
+                    isSearchable: true
                 }
             ],
             sortValue: "percentage",
+            isSearchable: true,
             displayCell: (rowData, DisplayTag) => {
                 const { percentage, value } = rowData.weight;
                 const splitValue = value ? value.split("/") : [];
@@ -452,14 +472,17 @@ const GridComponent = (props) => {
             innerCells: [
                 {
                     Header: "Percentage",
-                    accessor: "percentage"
+                    accessor: "percentage",
+                    isSearchable: true
                 },
                 {
                     Header: "Value",
-                    accessor: "value"
+                    accessor: "value",
+                    isSearchable: true
                 }
             ],
             sortValue: "percentage",
+            isSearchable: true,
             displayCell: (rowData, DisplayTag) => {
                 const { percentage, value } = rowData.volume;
                 const splitValue = value ? value.split("/") : [];
@@ -491,14 +514,17 @@ const GridComponent = (props) => {
             innerCells: [
                 {
                     Header: "Position",
-                    accessor: "position"
+                    accessor: "position",
+                    isSearchable: true
                 },
                 {
                     Header: "Value",
-                    accessor: "value"
+                    accessor: "value",
+                    isSearchable: true
                 }
             ],
             disableSortBy: true,
+            isSearchable: true,
             displayCell: (rowData, DisplayTag) => {
                 const { uldPositions } = rowData;
                 return (
@@ -535,11 +561,13 @@ const GridComponent = (props) => {
             innerCells: [
                 {
                     Header: "Revenue",
-                    accessor: "revenue"
+                    accessor: "revenue",
+                    isSearchable: true
                 },
                 {
                     Header: "Yeild",
-                    accessor: "yeild"
+                    accessor: "yeild",
+                    isSearchable: true
                 }
             ],
             displayCell: (rowData, DisplayTag) => {
@@ -555,12 +583,14 @@ const GridComponent = (props) => {
                     </div>
                 );
             },
-            sortValue: "revenue"
+            sortValue: "revenue",
+            isSearchable: true
         },
         {
             Header: "SR",
             accessor: "sr",
             width: 90,
+            isSearchable: true,
             displayCell: (rowData) => {
                 const { sr } = rowData;
                 return (
@@ -585,14 +615,17 @@ const GridComponent = (props) => {
             innerCells: [
                 {
                     Header: "Sr",
-                    accessor: "sr"
+                    accessor: "sr",
+                    isSearchable: true
                 },
                 {
                     Header: "Volume",
-                    accessor: "volume"
+                    accessor: "volume",
+                    isSearchable: true
                 }
             ],
             disableSortBy: true,
+            isSearchable: false,
             displayCell: (rowData, DisplayTag) => {
                 const { sr, volume } = rowData.queuedBooking;
                 return (
@@ -635,7 +668,7 @@ const GridComponent = (props) => {
             const timeValue = timeStatusArray.shift();
             const timeText = timeStatusArray.join(" ");
             return (
-                <div className="remarks-wrap">
+                <div className="remarks-wrap details-wrap">
                     <DisplayTag columnKey="remarks" cellKey="remarks">
                         <ul>
                             <li>{remarks}</li>
@@ -770,24 +803,33 @@ const GridComponent = (props) => {
         console.log("Grid Refrehsed ");
     };
 
-    const loadMoreData = () => {
-        fetchData(index, pageSize).then((data) => {
+    const loadMoreData = (updatedPageInfo) => {
+        fetchData(updatedPageInfo).then((data) => {
             if (data && data.length > 0) {
                 setGridData(gridData.concat(data));
-                setIndex(index + pageSize);
+                setPageInfo({
+                    ...pageInfo,
+                    pageNum: updatedPageInfo.pageNum
+                });
             } else {
-                setIsNextPageAvailable(false);
+                setPageInfo({
+                    ...pageInfo,
+                    pageNum: updatedPageInfo.pageNum,
+                    lastPage: true
+                });
             }
         });
     };
 
     useEffect(() => {
-        fetchData(index, pageSize).then((data) => {
+        fetchData(pageInfo).then((data) => {
             if (data && data.length > 0) {
                 setGridData(data);
-                setIndex(index + pageSize);
             } else {
-                setIsNextPageAvailable(false);
+                setPageInfo({
+                    ...pageInfo,
+                    lastPage: true
+                });
             }
         });
     }, []);
@@ -796,6 +838,8 @@ const GridComponent = (props) => {
         const rowId = event.currentTarget.dataset.id;
         setRowsToDeselect([Number(rowId)]);
     };
+
+    const paginationType = "index";
 
     if (gridData && gridData.length > 0 && columns && columns.length > 0) {
         return (
@@ -823,7 +867,8 @@ const GridComponent = (props) => {
                     gridWidth={gridWidth}
                     gridData={gridData}
                     idAttribute={idAttribute}
-                    isNextPageAvailable={isNextPageAvailable}
+                    paginationType={paginationType}
+                    pageInfo={pageInfo}
                     loadMoreData={loadMoreData}
                     columns={columns}
                     columnToExpand={passColumnToExpand ? columnToExpand : null}

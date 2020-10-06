@@ -8,40 +8,56 @@ import GroupSort from "../../../src/Overlays/groupsort/index";
 
 describe("Group Sort-index test Cases", () => {
     const isGroupSortLayOverOpen = true;
-    const originalColumns = [
+    const columns = [
         {
             Header: "Flight",
             accessor: "flight",
-            columnId: "flight-id",
+            columnId: "column_1",
             width: 100,
             innerCells: [
                 {
                     Header: "Flight No",
-                    accessor: "flightno"
+                    accessor: "flightno",
+                    cellId: "column_1_cell_0",
+                    display: true,
+                    isSearchable: true
                 },
                 {
                     Header: "Date",
-                    accessor: "date"
+                    accessor: "date",
+                    cellId: "column_1_cell_1",
+                    display: true,
+                    isSearchable: true
                 }
             ],
-            sortValue: "flightno"
+            sortValue: "flightno",
+            display: true,
+            isSearchable: true
         },
         {
             Header: "Flight1",
             accessor: "flight1",
-            columnId: "flight1-id",
+            columnId: "column_2",
             width: 100,
             innerCells: [
                 {
                     Header: "Flight No1",
-                    accessor: "flightno1"
+                    accessor: "flightno1",
+                    cellId: "column_2_cell_0",
+                    display: true,
+                    isSearchable: true
                 },
                 {
                     Header: "Date1",
-                    accessor: "date1"
+                    accessor: "date1",
+                    cellId: "column_2_cell_1",
+                    display: true,
+                    isSearchable: true
                 }
             ],
-            sortValue: "flightno1"
+            sortValue: "flightno1",
+            display: true,
+            isSearchable: true
         }
     ];
 
@@ -65,7 +81,7 @@ describe("Group Sort-index test Cases", () => {
             <GroupSort
                 isGroupSortOverLayOpen={isGroupSortLayOverOpen}
                 toggleGroupSortOverLay={mockTableGroupSortOverLay}
-                originalColumns={originalColumns}
+                columns={columns}
                 applyGroupSort={mockApplyGroupSortOverlay}
             />
         );
@@ -81,7 +97,7 @@ describe("Group Sort-index test Cases", () => {
                 <GroupSort
                     isGroupSortOverLayOpen={isGroupSortLayOverOpen}
                     toggleGroupSortOverLay={mockTableGroupSortOverLay}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     applyGroupSort={mockApplyGroupSortOverlay}
                 />,
                 container
@@ -109,17 +125,14 @@ describe("Group Sort-index test Cases", () => {
                 <GroupSort
                     isGroupSortOverLayOpen={isGroupSortLayOverOpen}
                     toggleGroupSortOverLay={mockTableGroupSortOverLay}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     applyGroupSort={mockApplyGroupSortOverlay}
                 />,
                 container
             );
         });
 
-        const applySortButton = document.getElementsByClassName(
-            "btns btns__save"
-        )[0];
-
+        const applySortButton = document.getElementsByTagName("button")[1];
         act(() => {
             applySortButton.dispatchEvent(
                 new MouseEvent("click", { bubbles: true })
@@ -140,7 +153,7 @@ describe("Group Sort-index test Cases", () => {
                 <GroupSort
                     isGroupSortOverLayOpen={isGroupSortLayOverOpen}
                     toggleGroupSortOverLay={mockTableGroupSortOverLay}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     applyGroupSort={mockApplyGroupSortOverlay}
                 />,
                 container
@@ -176,7 +189,7 @@ describe("Group Sort-index test Cases", () => {
                 <GroupSort
                     isGroupSortOverLayOpen={isGroupSortLayOverOpen}
                     toggleGroupSortOverLay={mockTableGroupSortOverLay}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     applyGroupSort={mockApplyGroupSortOverlay}
                 />,
                 container
@@ -203,9 +216,7 @@ describe("Group Sort-index test Cases", () => {
                 new MouseEvent("change", { bubbles: true })
             );
         });
-        const applySortButton = document.getElementsByClassName(
-            "btns btns__save"
-        )[0];
+        const applySortButton = document.getElementsByTagName("button")[1];
 
         act(() => {
             applySortButton.dispatchEvent(
@@ -225,7 +236,7 @@ describe("Group Sort-index test Cases", () => {
                 <GroupSort
                     isGroupSortOverLayOpen={isGroupSortLayOverOpen}
                     toggleGroupSortOverLay={mockTableGroupSortOverLay}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     applyGroupSort={mockApplyGroupSortOverlay}
                 />,
                 container
@@ -271,7 +282,7 @@ describe("Group Sort-index test Cases", () => {
                 <GroupSort
                     isGroupSortOverLayOpen={isGroupSortLayOverOpen}
                     toggleGroupSortOverLay={mockTableGroupSortOverLay}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     applyGroupSort={mockApplyGroupSortOverlay}
                 />,
                 container
@@ -304,7 +315,7 @@ describe("Group Sort-index test Cases", () => {
                 <GroupSort
                     isGroupSortOverLayOpen={false}
                     toggleGroupSortOverLay={mockTableGroupSortOverLay}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     applyGroupSort={mockApplyGroupSortOverlay}
                 />,
                 container

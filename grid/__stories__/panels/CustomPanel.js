@@ -29,12 +29,12 @@ const CustomPanel = () => {
             value: "SegmentSummary",
             children: [
                 {
-                    label: "Open Summary",
+                    label: "Open Segment Summary",
                     value: "OpenSummary",
                     handleEvent: OpenSummary
                 },
                 {
-                    label: "Close Summary",
+                    label: "Close Segment Summary",
                     value: "handleEvent",
                     handleEvent: CloseSummary
                 }
@@ -71,7 +71,7 @@ const CustomPanel = () => {
                           <div className="dropdown" key={label}>
                               <button
                                   type="button"
-                                  className="dropbtn"
+                                  className="neo-btn neo-btn-primary btn btn-secondary"
                                   onClick={handleEvent}
                               >
                                   {label}
@@ -91,7 +91,7 @@ const CustomPanel = () => {
                                                 >
                                                     <button
                                                         type="button"
-                                                        className="dropbtn"
+                                                        className="neo-btn neo-btn-default btn btn-secondary"
                                                         onClick={handleEvent}
                                                     >
                                                         {label}

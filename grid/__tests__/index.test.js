@@ -42,20 +42,24 @@ describe("render Index file ", () => {
             innerCells: [
                 {
                     Header: "Flight No",
-                    accessor: "flightno"
+                    accessor: "flightno",
+                    isSearchable: true
                 },
                 {
                     Header: "Date",
-                    accessor: "date"
+                    accessor: "date",
+                    isSearchable: true
                 }
             ],
+            isSearchable: true,
             sortValue: "flightno",
             Cell: mockDisplayCell
         },
         {
             Header: "SR",
             accessor: "sr",
-            width: 90
+            width: 90,
+            isSearchable: true
         },
         {
             Header: "ULD Positions",
@@ -64,11 +68,13 @@ describe("render Index file ", () => {
             innerCells: [
                 {
                     Header: "Position",
-                    accessor: "position"
+                    accessor: "position",
+                    isSearchable: true
                 },
                 {
                     Header: "Value",
-                    accessor: "value"
+                    accessor: "value",
+                    isSearchable: true
                 }
             ],
             disableSortBy: true,
@@ -98,13 +104,36 @@ describe("render Index file ", () => {
                         </ul>
                     </div>
                 );
-            }
+            },
+            columnId: "column_3",
+            isSearchable: true
         }
     ];
 
     const mockAdditionalColumn = {
         Header: "Remarks",
-        innerCells: [{ Header: "Remarks", accessor: "remarks" }],
+        innerCells: [
+            {
+                Header: "Remarks",
+                accessor: "remarks"
+            }
+        ],
+        displayCell: (rowData, DisplayTag) => {
+            const { remarks } = rowData;
+            return (
+                <div className="details-wrap">
+                    <DisplayTag columnKey="remarks" cellKey="remarks">
+                        <ul>
+                            <li>{remarks}</li>
+                        </ul>
+                    </DisplayTag>
+                </div>
+            );
+        }
+    };
+
+    const mockAdditionalColumnWithoutInnerCells = {
+        Header: "Remarks",
         displayCell: (rowData, DisplayTag) => {
             const { remarks } = rowData;
             return (
@@ -456,7 +485,7 @@ describe("render Index file ", () => {
 
     it("test row expand, column filter and Ascending group sort without row height calculation", () => {
         mockOffsetSize(600, 600);
-        const { container } = render(
+        const { container, getByTestId } = render(
             <Grid
                 className="icargoCustomClass"
                 title={mockTitle}
@@ -543,9 +572,7 @@ describe("render Index file ", () => {
                 new MouseEvent("click", { bubbles: true })
             );
         });
-        const applySortButton = sortOverlay.querySelector(
-            "[class='btns btns__save']"
-        );
+        const applySortButton = getByTestId("saveSort");
         act(() => {
             applySortButton.dispatchEvent(
                 new MouseEvent("click", { bubbles: true })
@@ -559,7 +586,7 @@ describe("render Index file ", () => {
 
     it("test Descending group sort with row height calculation", () => {
         mockOffsetSize(600, 600);
-        const { container } = render(
+        const { container, getByTestId } = render(
             <Grid
                 title={mockTitle}
                 gridHeight={mockGridHeight}
@@ -608,9 +635,7 @@ describe("render Index file ", () => {
         fireEvent.change(sortOrderSelectList, {
             target: { value: "Descending" }
         });
-        const applySortButton = sortOverlay.querySelector(
-            "[class='btns btns__save']"
-        );
+        const applySortButton = getByTestId("saveSort");
         act(() => {
             applySortButton.dispatchEvent(
                 new MouseEvent("click", { bubbles: true })
@@ -624,7 +649,7 @@ describe("render Index file ", () => {
 
     it("test row options functionalities and column sort with row height calculation, custom panel and refresh button not passed", () => {
         mockOffsetSize(600, 600);
-        const { getByText, container } = render(
+        const { getByText, container, getByTestId } = render(
             <Grid
                 title={mockTitle}
                 gridHeight={mockGridHeight}
@@ -687,9 +712,7 @@ describe("render Index file ", () => {
             .getElementsByClassName("edit-flight-no")[0]
             .getElementsByTagName("input")[0];
         fireEvent.change(flightnoInput, { target: { value: "dfg" } });
-        const rowEditSave = rowOptionActionOverlay.querySelector(
-            "[class='save-Button']"
-        );
+        const rowEditSave = getByTestId("rowEditOverlay-save");
         act(() => {
             rowEditSave.dispatchEvent(
                 new MouseEvent("click", { bubbles: true })
@@ -721,9 +744,7 @@ describe("render Index file ", () => {
             .getElementsByClassName("row-option-action-overlay")
             .item(0);
         expect(rowOptionActionOverlay).toBeInTheDocument();
-        const rowDelete = rowOptionActionOverlay.querySelector(
-            "[class='delete-Button']"
-        );
+        const rowDelete = getByTestId("rowDeleteOverlay-Delete");
         act(() => {
             rowDelete.dispatchEvent(new MouseEvent("click", { bubbles: true }));
         });
@@ -787,7 +808,7 @@ describe("render Index file ", () => {
                 isNextPageAvailable={false}
                 loadMoreData={mockLoadMoreData}
                 columns={gridColumns}
-                columnToExpand={mockAdditionalColumn}
+                columnToExpand={mockAdditionalColumnWithoutInnerCells}
                 rowActions={mockRowActions}
                 rowActionCallback={mockRowActionCallback}
                 getRowEditOverlay={mockGetRowEditOverlay}
@@ -955,7 +976,7 @@ describe("render Index file ", () => {
 
     it("test row selection retained after applying group sort", () => {
         mockOffsetSize(600, 600);
-        const { container } = render(
+        const { container, getByTestId } = render(
             <Grid
                 className="icargoCustomClass"
                 title={mockTitle}
@@ -1008,9 +1029,7 @@ describe("render Index file ", () => {
                 new MouseEvent("click", { bubbles: true })
             );
         });
-        const applySortButton = sortOverlay.querySelector(
-            "[class='btns btns__save']"
-        );
+        const applySortButton = getByTestId("saveSort");
         act(() => {
             applySortButton.dispatchEvent(
                 new MouseEvent("click", { bubbles: true })

@@ -8,20 +8,17 @@ import AdditionalColumnTag from "../../src/Functions/AdditionalColumnTag";
 describe("AdditionalColumnTag unit test", () => {
     const additionalColumnMockData = {
         Header: "Remarks",
+        display: true,
         innerCells: [
             {
                 Header: "Remarks",
-                accessor: "remarks"
+                accessor: "remarks",
+                display: true,
+                cellId: "rowExpand_cell_0"
             }
         ],
-        columnId: "ExpandColumn",
-        displayInExpandedRegion: true,
-        originalInnerCells: [
-            {
-                Header: "Remarks",
-                accessor: "remarks"
-            }
-        ]
+        columnId: "rowExpand",
+        isDisplayInExpandedRegion: true
     };
     let container;
     beforeEach(() => {

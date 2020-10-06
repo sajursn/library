@@ -1,9 +1,9 @@
 export const checkInnerCells = (column, cellKey) => {
     if (column) {
         const { innerCells } = column;
-        if (innerCells) {
+        if (innerCells && innerCells.length > 0) {
             const innerCellData = innerCells.find((cell) => {
-                return cell.accessor === cellKey;
+                return cell.accessor === cellKey && cell.display === true;
             });
             if (innerCellData) {
                 return true;

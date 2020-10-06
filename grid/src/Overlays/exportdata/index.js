@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import ClickAwayListener from "react-click-away-listener";
 import PropTypes from "prop-types";
+import update from "immutability-helper";
 import JsPdf from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
+import ColumnSearch from "../common/columnsSearch";
 import {
     IconCsv,
     IconExcel,
@@ -16,41 +18,66 @@ const ExportData = (props) => {
         isExportOverlayOpen,
         toggleExportDataOverlay,
         rows,
-        originalColumns,
         columns,
-        isRowExpandEnabled,
-        isExpandContentAvailable,
         additionalColumn
     } = props;
-    const convertedAdditionalColumn = additionalColumn
-        ? [additionalColumn]
-        : [];
-    // Check if row expand is configured by developer
-    const getRemarksColumnIfAvailable = () => {
-        return isExpandContentAvailable ? convertedAdditionalColumn : [];
-    };
 
-    // Check if row expand is set visible from manage overlay
-    const getRemarksColumnIfSelectedByUser = () => {
-        return isRowExpandEnabled ? convertedAdditionalColumn : [];
-    };
-
-    // Full list of columns + expand column
-    const updatedColumns = [...originalColumns].concat(
-        getRemarksColumnIfAvailable()
+    // Set state variables for:
+    // managedColumns - main columns displayed in colum setting region
+    // managedAdditionalColumn - additional column displayed in colum setting region
+    // downloadTypes - types of downloads user has selected
+    // warning - error message to be displayed
+    const [managedColumns, setManagedColumns] = useState(columns);
+    const [managedAdditionalColumn, setManagedAdditionalColumn] = useState(
+        additionalColumn
     );
-
-    // List of columns + expand based on user selection from manage overlay
-    const updatedColumnsPerUserSelection = [...columns].concat(
-        getRemarksColumnIfSelectedByUser()
-    );
-
-    const [managedColumns, setManagedColumns] = useState(
-        updatedColumnsPerUserSelection
-    );
-    const [searchedColumns, setSearchedColumns] = useState(updatedColumns);
     const [downloadTypes, setDownloadTypes] = useState([]);
     const [warning, setWarning] = useState("");
+
+    // Updates the column display value accordingly
+    const changeColumnSelection = (column, flag) => {
+        return update(column, {
+            display: { $set: flag }
+        });
+    };
+
+    // update the display flag value of column or all columns in managedColumns state, based on the selection
+    const updateColumns = (columnid, isadditionalcolumn, checked) => {
+        if (columnid === "all") {
+            // Update both main columns and additional column state values
+            const updatedManagedColumns = managedColumns.map((column) => {
+                return changeColumnSelection(column, checked);
+            });
+            setManagedColumns(
+                update(updatedManagedColumns, {
+                    $set: updatedManagedColumns
+                })
+            );
+            setManagedAdditionalColumn(
+                changeColumnSelection(managedAdditionalColumn, checked)
+            );
+        } else if (isadditionalcolumn === "true") {
+            // Update additional column state value
+            setManagedAdditionalColumn(
+                changeColumnSelection(managedAdditionalColumn, checked)
+            );
+        } else {
+            // Update main columns state value
+            const indexOfColumn = managedColumns.findIndex((column) => {
+                return column.columnId === columnid;
+            });
+            setManagedColumns(
+                update(managedColumns, {
+                    [indexOfColumn]: {
+                        $set: changeColumnSelection(
+                            managedColumns[indexOfColumn],
+                            checked
+                        )
+                    }
+                })
+            );
+        }
+    };
 
     const downloadPDF = (rowFilteredValues, rowFilteredHeader) => {
         const unit = "pt";
@@ -120,22 +147,21 @@ const ExportData = (props) => {
 
         setWarning("");
 
-        if (managedColumns.length > 0 && downloadTypes.length > 0) {
+        const filteredManagedColumns = managedColumns.filter((column) => {
+            return column.display === true;
+        });
+
+        if (filteredManagedColumns.length > 0 && downloadTypes.length > 0) {
             const rowLength = rows && rows.length > 0 ? rows.length : 0;
             rows.forEach((rowDetails, index) => {
                 const row = rowDetails.original;
                 const filteredColumnVal = {};
                 const rowFilteredValues = [];
                 const rowFilteredHeader = [];
-                managedColumns.forEach((columnName) => {
-                    const {
-                        Header,
-                        accessor,
-                        originalInnerCells,
-                        displayInExpandedRegion
-                    } = columnName;
+                filteredManagedColumns.forEach((columnName) => {
+                    const { Header, accessor, innerCells } = columnName;
                     const isInnerCellsPresent =
-                        originalInnerCells && originalInnerCells.length > 0;
+                        innerCells && innerCells.length > 0;
                     const accessorRowValue = row[accessor];
                     let columnValue = "";
                     let columnHeader = "";
@@ -145,35 +171,39 @@ const ExportData = (props) => {
                             isInnerCellsPresent &&
                             typeof accessorRowValue === "object"
                         ) {
-                            originalInnerCells.forEach((cell) => {
-                                const innerCellAccessor = cell.accessor;
-                                const innerCellHeader = cell.Header;
-                                const innerCellAccessorValue =
-                                    accessorRowValue[innerCellAccessor];
-                                if (accessorRowValue.length > 0) {
-                                    accessorRowValue.forEach(
-                                        (item, itemIndex) => {
-                                            columnValue = item[
-                                                innerCellAccessor
-                                            ].toString();
-                                            columnHeader = `${Header} - ${innerCellHeader}_${itemIndex}`;
-                                            filteredColumnVal[
-                                                columnHeader
-                                            ] = columnValue;
-                                            rowFilteredValues.push(columnValue);
-                                            rowFilteredHeader.push(
-                                                columnHeader
-                                            );
-                                        }
-                                    );
-                                } else if (innerCellAccessorValue) {
-                                    columnValue = innerCellAccessorValue;
-                                    columnHeader = `${Header} - ${innerCellHeader}`;
-                                    filteredColumnVal[
-                                        columnHeader
-                                    ] = columnValue;
-                                    rowFilteredValues.push(columnValue);
-                                    rowFilteredHeader.push(columnHeader);
+                            innerCells.forEach((cell) => {
+                                if (cell.display === true) {
+                                    const innerCellAccessor = cell.accessor;
+                                    const innerCellHeader = cell.Header;
+                                    const innerCellAccessorValue =
+                                        accessorRowValue[innerCellAccessor];
+                                    if (accessorRowValue.length > 0) {
+                                        accessorRowValue.forEach(
+                                            (item, itemIndex) => {
+                                                columnValue = item[
+                                                    innerCellAccessor
+                                                ].toString();
+                                                columnHeader = `${Header} - ${innerCellHeader}_${itemIndex}`;
+                                                filteredColumnVal[
+                                                    columnHeader
+                                                ] = columnValue;
+                                                rowFilteredValues.push(
+                                                    columnValue
+                                                );
+                                                rowFilteredHeader.push(
+                                                    columnHeader
+                                                );
+                                            }
+                                        );
+                                    } else if (innerCellAccessorValue) {
+                                        columnValue = innerCellAccessorValue;
+                                        columnHeader = `${Header} - ${innerCellHeader}`;
+                                        filteredColumnVal[
+                                            columnHeader
+                                        ] = columnValue;
+                                        rowFilteredValues.push(columnValue);
+                                        rowFilteredHeader.push(columnHeader);
+                                    }
                                 }
                             });
                         } else {
@@ -183,9 +213,16 @@ const ExportData = (props) => {
                             rowFilteredValues.push(columnValue);
                             rowFilteredHeader.push(columnHeader);
                         }
-                    } else if (displayInExpandedRegion && isInnerCellsPresent) {
-                        // For column in the expanded section
-                        originalInnerCells.forEach((expandedCell) => {
+                    }
+                });
+                if (
+                    managedAdditionalColumn &&
+                    managedAdditionalColumn.display === true
+                ) {
+                    const { innerCells } = managedAdditionalColumn;
+                    // For column in the expanded section
+                    innerCells.forEach((expandedCell) => {
+                        if (expandedCell.display === true) {
                             const expandedCellAccessor = expandedCell.accessor;
                             const expandedCellHeader = expandedCell.Header;
                             const expandedCellValue = row[expandedCellAccessor];
@@ -205,14 +242,14 @@ const ExportData = (props) => {
                                     ).join("||");
                                 }
                             }
-                            columnValue = formattedValue;
-                            columnHeader = expandedCellHeader;
-                            filteredColumnVal[columnHeader] = columnValue;
-                            rowFilteredValues.push(columnValue);
-                            rowFilteredHeader.push(columnHeader);
-                        });
-                    }
-                });
+                            filteredColumnVal[
+                                expandedCellHeader
+                            ] = formattedValue;
+                            rowFilteredValues.push(formattedValue);
+                            rowFilteredHeader.push(expandedCellHeader);
+                        }
+                    });
+                }
                 filteredRow.push(filteredColumnVal);
                 filteredRowValues.push(rowFilteredValues);
                 if (rowLength === index + 1)
@@ -228,88 +265,15 @@ const ExportData = (props) => {
                     downloadCSVFile(filteredRow);
                 }
             });
-        } else if (managedColumns.length === 0 && downloadTypes.length === 0) {
+        } else if (
+            filteredManagedColumns.length === 0 &&
+            downloadTypes.length === 0
+        ) {
             setWarning("Select at least one column and a file type");
-        } else if (managedColumns.length === 0) {
+        } else if (filteredManagedColumns.length === 0) {
             setWarning("Select at least one column");
         } else if (downloadTypes.length === 0) {
             setWarning("Select at least one file type");
-        }
-    };
-
-    const filterColumnsList = (event) => {
-        let { value } = event ? event.target : "";
-        value = value ? value.toLowerCase() : "";
-        if (value !== "") {
-            setSearchedColumns(
-                originalColumns
-                    .filter((column) => {
-                        return column.Header.toLowerCase().includes(value);
-                    })
-                    .concat(
-                        getRemarksColumnIfAvailable().filter((column) => {
-                            return column.Header.toLowerCase().includes(value);
-                        })
-                    )
-            );
-        } else {
-            setSearchedColumns(updatedColumns);
-        }
-    };
-
-    const isCheckboxSelected = (columnId) => {
-        if (columnId === "Select All") {
-            return managedColumns.length === searchedColumns.length;
-        }
-        const selectedColumn = managedColumns.filter((column) => {
-            return column.columnId === columnId;
-        });
-        return selectedColumn && selectedColumn.length > 0;
-    };
-
-    const selectAllColumns = (event) => {
-        if (event.target.checked) {
-            setManagedColumns(updatedColumns);
-        } else {
-            setManagedColumns([]);
-        }
-    };
-
-    const selectSingleColumn = (event) => {
-        const { currentTarget } = event;
-        const { checked, value } = currentTarget;
-
-        // If column checkbox is checked
-        if (checked) {
-            // Find the index of selected column from original column array and also find the user selected column
-            const indexOfColumnToAdd = updatedColumns.findIndex((column) => {
-                return column.columnId === value;
-            });
-            const itemToAdd = updatedColumns[indexOfColumnToAdd];
-
-            // Loop through the managedColumns array to find the position of the column that is present previous to the user selected column
-            // Find index of that previous column and push the new column to add in that position
-            let prevItemIndex = -1;
-            for (let i = indexOfColumnToAdd; i > 0; i--) {
-                if (prevItemIndex === -1) {
-                    prevItemIndex = managedColumns.findIndex((column) => {
-                        return (
-                            column.columnId ===
-                            updatedColumns[indexOfColumnToAdd - 1].columnId
-                        );
-                    });
-                }
-            }
-
-            const newColumnsList = managedColumns.slice(0); // Copying state value
-            newColumnsList.splice(prevItemIndex + 1, 0, itemToAdd);
-            setManagedColumns(newColumnsList);
-        } else {
-            setManagedColumns(
-                managedColumns.filter((column) => {
-                    return column.columnId !== value;
-                })
-            );
         }
     };
 
@@ -327,9 +291,9 @@ const ExportData = (props) => {
     };
 
     useEffect(() => {
-        setManagedColumns(updatedColumnsPerUserSelection);
-        setSearchedColumns(updatedColumns);
-    }, [columns, isRowExpandEnabled, additionalColumn]);
+        setManagedColumns(columns);
+        setManagedAdditionalColumn(additionalColumn);
+    }, [columns, additionalColumn]);
 
     if (isExportOverlayOpen) {
         return (
@@ -342,52 +306,13 @@ const ExportData = (props) => {
                         <div className="export__header">
                             <strong>Export Data</strong>
                         </div>
-                        <div className="export__body">
-                            <input
-                                type="text"
-                                data-testid="search"
-                                placeholder="Search column"
-                                className="custom__ctrl"
-                                onChange={filterColumnsList}
-                            />
-                            <div className="export__wrap export__headertxt">
-                                <div className="export__checkbox">
-                                    <input
-                                        type="checkbox"
-                                        value="Select All"
-                                        data-testid="select-all-checkbox"
-                                        checked={isCheckboxSelected(
-                                            "Select All"
-                                        )}
-                                        onChange={selectAllColumns}
-                                    />
-                                </div>
-                                <div className="export__txt">Select All</div>
-                            </div>
-                            {searchedColumns.map((column) => {
-                                return (
-                                    <div
-                                        className="export__wrap"
-                                        key={column.columnId}
-                                    >
-                                        <div className="export__checkbox">
-                                            <input
-                                                type="checkbox"
-                                                data-testid={`${column.Header}`}
-                                                value={column.columnId}
-                                                checked={isCheckboxSelected(
-                                                    column.columnId
-                                                )}
-                                                onChange={selectSingleColumn}
-                                            />
-                                        </div>
-                                        <div className="export__txt">
-                                            {column.Header}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                        <ColumnSearch
+                            columns={columns}
+                            additionalColumn={additionalColumn}
+                            managedColumns={managedColumns}
+                            managedAdditionalColumn={managedAdditionalColumn}
+                            updateColumns={updateColumns}
+                        />
                     </div>
                     <div className="export__settings">
                         <div className="export__header">
@@ -404,9 +329,10 @@ const ExportData = (props) => {
                         <div className="export__as">Export As</div>
                         <div className="export__body">
                             <div className="export__reorder">
-                                <div className="check-wrap">
+                                <div className="form-check">
                                     <input
                                         type="checkbox"
+                                        className="form-check-input custom-checkbox form-check-input"
                                         id="chk_pdf"
                                         data-testid="chk_pdf_test"
                                         value="pdf"
@@ -422,9 +348,10 @@ const ExportData = (props) => {
                                 </div>
                             </div>
                             <div className="export__reorder">
-                                <div className="check-wrap">
+                                <div className="form-check">
                                     <input
                                         type="checkbox"
+                                        className="form-check-input custom-checkbox form-check-input"
                                         id="chk_excel"
                                         data-testid="chk_excel_test"
                                         value="excel"
@@ -442,9 +369,10 @@ const ExportData = (props) => {
                                 </div>
                             </div>
                             <div className="export__reorder">
-                                <div className="check-wrap">
+                                <div className="form-check">
                                     <input
                                         type="checkbox"
+                                        className="form-check-input custom-checkbox form-check-input"
                                         id="chk_csv"
                                         data-testid="chk_csv_test"
                                         value="csv"
@@ -470,7 +398,7 @@ const ExportData = (props) => {
                                 <button
                                     type="button"
                                     data-testid="cancel_button"
-                                    className="btns"
+                                    className="neo-btn neo-btn-primary btn btn-secondary"
                                     onClick={toggleExportDataOverlay}
                                 >
                                     Cancel
@@ -478,7 +406,7 @@ const ExportData = (props) => {
                                 <button
                                     type="button"
                                     data-testid="export_button"
-                                    className="btns btns__save"
+                                    className="neo-btn neo-btn-default btn btn-secondary"
                                     onClick={exportRowData}
                                 >
                                     Export
@@ -498,10 +426,7 @@ ExportData.propTypes = {
     toggleExportDataOverlay: PropTypes.func,
     rows: PropTypes.arrayOf(PropTypes.object),
     columns: PropTypes.arrayOf(PropTypes.object),
-    originalColumns: PropTypes.arrayOf(PropTypes.object),
-    isExpandContentAvailable: PropTypes.bool,
-    additionalColumn: PropTypes.object,
-    isRowExpandEnabled: PropTypes.bool
+    additionalColumn: PropTypes.object
 };
 
 export default ExportData;

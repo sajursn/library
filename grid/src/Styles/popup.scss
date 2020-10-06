@@ -37,26 +37,10 @@
         select {
             margin: 0 0 10px;
         }
-        button {
-            background: #169bd5;
-            color: #fff;
-            width: 98px;
-            height: 33px;
-            border: none;
-            border-radius: 3px;
-            margin: 0 5px;
-            cursor: pointer;
-            &.cancel-Button {
-                background: #fff;
-                color: #169bd5;
-                border: #169bd5 1px solid;
-            }
-        }
-        .cancel-save-buttons {
-            margin: 10px 10px;
-            padding-top: 15px;
+        .btn-wrap {
             display: flex;
             justify-content: flex-end;
+            margin: 10px 0;
         }
     }
 }

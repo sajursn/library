@@ -29,7 +29,8 @@ describe("ColumnsList unit test", () => {
             width: 50,
             disableFilters: true,
             columnId: "column_0",
-            displayInExpandedRegion: false
+            isDisplayInExpandedRegion: false,
+            display: true
         },
         {
             Header: "Flight",
@@ -38,30 +39,27 @@ describe("ColumnsList unit test", () => {
             innerCells: [
                 {
                     Header: "Flight No",
-                    accessor: "flightno"
+                    accessor: "flightno",
+                    display: true,
+                    cellId: "column_1_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Date",
-                    accessor: "date"
+                    accessor: "date",
+                    display: true,
+                    cellId: "column_1_cell_1",
+                    isSearchable: true
                 }
             ],
             sortValue: "flightno",
             columnId: "column_1",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Flight No",
-                    accessor: "flightno"
-                },
-                {
-                    Header: "Date",
-                    accessor: "date"
-                }
-            ]
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         }
     ];
     const updateColumnsInState = jest.fn();
-    const isInnerCellSelected = jest.fn();
     const selectInnerCells = jest.fn();
 
     afterEach(cleanup);
@@ -70,10 +68,9 @@ describe("ColumnsList unit test", () => {
         const { getByText } = render(
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <ColumnsList
-                    columnsToManage={managedColumns}
-                    updateColumnsInState={updateColumnsInState}
-                    isInnerCellSelected={isInnerCellSelected}
-                    selectInnerCells={selectInnerCells}
+                    managedColumns={managedColumns}
+                    onColumnReorder={updateColumnsInState}
+                    onInnerCellChange={selectInnerCells}
                 />
             </DndProvider>
         );
@@ -88,10 +85,9 @@ describe("ColumnsList unit test", () => {
         const { getAllByTestId } = render(
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <ColumnsList
-                    columnsToManage={managedColumns}
-                    updateColumnsInState={updateColumnsInState}
-                    isInnerCellSelected={isInnerCellSelected}
-                    selectInnerCells={selectInnerCells}
+                    managedColumns={managedColumns}
+                    onColumnReorder={updateColumnsInState}
+                    onInnerCellChange={selectInnerCells}
                 />
             </DndProvider>
         );

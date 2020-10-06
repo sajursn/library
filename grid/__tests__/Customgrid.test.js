@@ -7,7 +7,7 @@ import "@testing-library/jest-dom/extend-expect";
 import regeneratorRuntime from "regenerator-runtime";
 import Customgrid from "../src/Customgrid";
 
-describe("render CustomgridCustomgrid", () => {
+describe("render Customgrid", () => {
     function mockOffsetSize(width, height) {
         Object.defineProperty(HTMLElement.prototype, "offsetHeight", {
             configurable: true,
@@ -34,7 +34,8 @@ describe("render CustomgridCustomgrid", () => {
             accessor: "travelId",
             width: 50,
             disableFilters: true,
-            columnId: "column_0"
+            columnId: "column_0",
+            display: true
         },
         {
             Header: "Flight",
@@ -44,28 +45,45 @@ describe("render CustomgridCustomgrid", () => {
             innerCells: [
                 {
                     Header: "Flight No",
-                    accessor: "flightno"
+                    accessor: "flightno",
+                    display: true,
+                    cellId: "column_1_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Date",
-                    accessor: "date"
+                    accessor: "date",
+                    display: true,
+                    cellId: "column_1_cell_1",
+                    isSearchable: true
                 }
             ],
             sortValue: "flightno",
-            Cell: mockDisplayCell
+            Cell: mockDisplayCell,
+            display: false,
+            isSearchable: true
         },
         {
             Header: "SR",
             accessor: "sr",
             width: 90,
-            columnId: "column_2"
+            columnId: "column_2",
+            display: true,
+            isSearchable: true
         }
     ];
 
     const mockAdditionalColumn = {
         Header: "Remarks",
-        innerCells: [{ Header: "Remarks", accessor: "remarks" }],
-        columnId: "Additional_column_0",
+        innerCells: [
+            {
+                Header: "Remarks",
+                accessor: "remarks",
+                cellId: "rowExpand_cell_0",
+                display: true
+            }
+        ],
+        columnId: "rowExpand",
         displayCell: (rowData, DisplayTag) => {
             const { remarks } = rowData;
             return (
@@ -77,7 +95,8 @@ describe("render CustomgridCustomgrid", () => {
                     </DisplayTag>
                 </div>
             );
-        }
+        },
+        display: true
     };
 
     const data = [
@@ -419,14 +438,13 @@ describe("render CustomgridCustomgrid", () => {
 
     it("should render Customgrid", () => {
         mockOffsetSize(600, 600);
-        const { getByText, container } = render(
+        const { getByText, container, getByTestId, getAllByTestId } = render(
             <Customgrid
                 title={mockTitle}
                 gridHeight={mockGridHeight}
                 gridWidth={mockGridWidth}
                 managableColumns={gridColumns}
-                originalColumns={gridColumns}
-                additionalColumn={mockAdditionalColumn}
+                expandedRowData={mockAdditionalColumn}
                 data={data}
                 idAttribute="travelId"
                 getRowEditOverlay={mockGetRowEditOverlay}
@@ -445,7 +463,6 @@ describe("render CustomgridCustomgrid", () => {
                 doGroupSort={mockDoGroupSort}
             />
         );
-
         // Column Filter Search
         const toggleColumnFilter = container.querySelector(
             "[data-testid='toggleColumnFilter']"
@@ -455,7 +472,7 @@ describe("render CustomgridCustomgrid", () => {
                 new MouseEvent("click", { bubbles: true })
             );
         });
-        const columnInput = container.getElementsByClassName("txt").item(1);
+        const columnInput = getAllByTestId("columnFilter-textbox")[0];
         fireEvent.change(columnInput, { target: { value: "222" } });
         expect(columnInput.value).toBe("222");
         fireEvent.change(columnInput, { target: { value: "" } });
@@ -480,9 +497,7 @@ describe("render CustomgridCustomgrid", () => {
                 new MouseEvent("click", { bubbles: true })
             );
         });
-        const applySortButton = sortOverlay.querySelector(
-            "[class='btns btns__save']"
-        );
+        const applySortButton = getByTestId("saveSort");
         act(() => {
             applySortButton.dispatchEvent(
                 new MouseEvent("click", { bubbles: true })
@@ -505,20 +520,18 @@ describe("render CustomgridCustomgrid", () => {
         expect(mockSelectBulkData).toBeCalledTimes(1);
 
         // Apply column manage
-        const toggleManageColumns = container.querySelector(
-            "[data-testid='toggleManageColumns']"
+        const toggleManageColumnsOverlay = container.querySelector(
+            "[data-testid='toggleManageColumnsOverlay']"
         );
         act(() => {
-            toggleManageColumns.dispatchEvent(
+            toggleManageColumnsOverlay.dispatchEvent(
                 new MouseEvent("click", { bubbles: true })
             );
         });
         let columnManageOverlay = container.querySelector(
             "[class='neo-grid-popover__column column__grid']"
         );
-        const applyColumnManageButton = columnManageOverlay.querySelector(
-            "[class='btns btns__save']"
-        );
+        const applyColumnManageButton = getByTestId("save_columnsManage");
         act(() => {
             applyColumnManageButton.dispatchEvent(
                 new MouseEvent("click", { bubbles: true })
@@ -574,9 +587,7 @@ describe("render CustomgridCustomgrid", () => {
             .getElementsByClassName("row-option-action-overlay")
             .item(0);
         expect(rowOptionActionOverlay).toBeInTheDocument();
-        const rowEditCancel = rowOptionActionOverlay.querySelector(
-            "[class='cancel-Button']"
-        );
+        const rowEditCancel = getByTestId("rowEditOverlay-cancel");
         act(() => {
             rowEditCancel.dispatchEvent(
                 new MouseEvent("click", { bubbles: true })
@@ -606,9 +617,7 @@ describe("render CustomgridCustomgrid", () => {
             .getElementsByClassName("row-option-action-overlay")
             .item(0);
         expect(rowOptionActionOverlay).toBeInTheDocument();
-        const rowDeleteCancel = rowOptionActionOverlay.querySelector(
-            "[class='cancel-Button']"
-        );
+        const rowDeleteCancel = getByTestId("rowDeleteOverlay-cancel");
         act(() => {
             rowDeleteCancel.dispatchEvent(
                 new MouseEvent("click", { bubbles: true })
@@ -628,8 +637,7 @@ describe("render CustomgridCustomgrid", () => {
                 gridHeight={mockGridHeight}
                 gridWidth={mockGridWidth}
                 managableColumns={gridColumns}
-                originalColumns={gridColumns}
-                additionalColumn={mockAdditionalColumn}
+                expandedRowData={mockAdditionalColumn}
                 data={data}
                 idAttribute="travelId"
                 getRowEditOverlay={mockGetRowEditOverlay}

@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React from "react";
-import { render, waitFor, cleanup, fireEvent } from "@testing-library/react";
+import { render, cleanup, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 /* eslint-disable no-unused-vars */
 import regeneratorRuntime from "regenerator-runtime";
@@ -19,33 +19,26 @@ describe("Export Data unit test", () => {
         innerCells: [
             {
                 Header: "Remarks",
-                accessor: "remarks"
+                accessor: "remarks",
+                display: true,
+                cellId: "rowExpand_cell_0"
             },
             {
                 Header: "ULD Positions",
-                accessor: "uldPositions"
+                accessor: "uldPositions",
+                display: true,
+                cellId: "rowExpand_cell_1"
             },
             {
                 Header: "Flight",
-                accessor: "flight"
+                accessor: "flight",
+                display: true,
+                cellId: "rowExpand_cell_2"
             }
         ],
-        columnId: "ExpandColumn",
-        displayInExpandedRegion: true,
-        originalInnerCells: [
-            {
-                Header: "Remarks",
-                accessor: "remarks"
-            },
-            {
-                Header: "ULD Positions",
-                accessor: "uldPositions"
-            },
-            {
-                Header: "Flight",
-                accessor: "flight"
-            }
-        ]
+        columnId: "rowExpand",
+        isDisplayInExpandedRegion: true,
+        display: true
     };
 
     const mockColumns = [
@@ -55,7 +48,9 @@ describe("Export Data unit test", () => {
             width: 50,
             disableFilters: true,
             columnId: "column_0",
-            displayInExpandedRegion: false
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         },
         {
             Header: "Flight",
@@ -64,26 +59,24 @@ describe("Export Data unit test", () => {
             innerCells: [
                 {
                     Header: "Flight No",
-                    accessor: "flightno"
+                    accessor: "flightno",
+                    display: true,
+                    cellId: "column_1_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Date",
-                    accessor: "date"
+                    accessor: "date",
+                    display: true,
+                    cellId: "column_1_cell_1",
+                    isSearchable: true
                 }
             ],
             sortValue: "flightno",
             columnId: "column_1",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Flight No",
-                    accessor: "flightno"
-                },
-                {
-                    Header: "Date",
-                    accessor: "date"
-                }
-            ]
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         },
         {
             Header: "ULD Positions",
@@ -92,106 +85,33 @@ describe("Export Data unit test", () => {
             innerCells: [
                 {
                     Header: "Position",
-                    accessor: "position"
+                    accessor: "position",
+                    display: true,
+                    cellId: "column_6_cell_0",
+                    isSearchable: true
                 },
                 {
                     Header: "Value",
-                    accessor: "value"
+                    accessor: "value",
+                    display: true,
+                    cellId: "column_6_cell_1",
+                    isSearchable: true
                 }
             ],
             disableSortBy: true,
             columnId: "column_6",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Position",
-                    accessor: "position"
-                },
-                {
-                    Header: "Value",
-                    accessor: "value"
-                }
-            ]
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         },
         {
             Header: "SR",
             accessor: "sr",
             width: 90,
             columnId: "column_8",
-            displayInExpandedRegion: false
-        }
-    ];
-    const mockOriginalColumns = [
-        {
-            Header: "Id",
-            accessor: "travelId",
-            width: 50,
-            disableFilters: true,
-            columnId: "column_0",
-            displayInExpandedRegion: false
-        },
-        {
-            Header: "Flight",
-            accessor: "flight",
-            width: 100,
-            innerCells: [
-                {
-                    Header: "Flight No",
-                    accessor: "flightno"
-                },
-                {
-                    Header: "Date",
-                    accessor: "date"
-                }
-            ],
-            sortValue: "flightno",
-            columnId: "column_1",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Flight No",
-                    accessor: "flightno"
-                },
-                {
-                    Header: "Date",
-                    accessor: "date"
-                }
-            ]
-        },
-        {
-            Header: "ULD Positions",
-            accessor: "uldPositions",
-            width: 120,
-            innerCells: [
-                {
-                    Header: "Position",
-                    accessor: "position"
-                },
-                {
-                    Header: "Value",
-                    accessor: "value"
-                }
-            ],
-            disableSortBy: true,
-            columnId: "column_6",
-            displayInExpandedRegion: false,
-            originalInnerCells: [
-                {
-                    Header: "Position",
-                    accessor: "position"
-                },
-                {
-                    Header: "Value",
-                    accessor: "value"
-                }
-            ]
-        },
-        {
-            Header: "SR",
-            accessor: "sr",
-            width: 90,
-            columnId: "column_8",
-            displayInExpandedRegion: false
+            isDisplayInExpandedRegion: false,
+            display: true,
+            isSearchable: true
         }
     ];
     const mockRows = [
@@ -339,11 +259,8 @@ describe("Export Data unit test", () => {
                 isExportOverlayOpen
                 toggleExportDataOverlay={mocktoggleExportDataOverlay}
                 rows={mockRows}
-                originalColumns={mockOriginalColumns}
                 columns={mockColumns}
-                isRowExpandEnabled
-                isExpandContentAvailable
-                additionalColumn={[mockAdditionalColumn]}
+                additionalColumn={mockAdditionalColumn}
             />,
             container
         );
@@ -355,11 +272,8 @@ describe("Export Data unit test", () => {
                 isExportOverlayOpen={false}
                 toggleExportDataOverlay={mocktoggleExportDataOverlay}
                 rows={mockRows}
-                originalColumns={mockOriginalColumns}
                 columns={mockColumns}
-                isRowExpandEnabled
-                isExpandContentAvailable
-                additionalColumn={[mockAdditionalColumn]}
+                additionalColumn={mockAdditionalColumn}
             />,
             container
         );
@@ -371,44 +285,39 @@ describe("Export Data unit test", () => {
                 isExportOverlayOpen
                 toggleExportDataOverlay={mocktoggleExportDataOverlay}
                 rows={mockRows}
-                originalColumns={mockOriginalColumns}
                 columns={mockColumns}
-                isRowExpandEnabled
-                isExpandContentAvailable
-                additionalColumn={[mockAdditionalColumn]}
+                additionalColumn={mockAdditionalColumn}
             />,
             container
         );
-        const selectAllCheck = getByTestId("select-all-checkbox");
+        const selectAllCheck = getByTestId("selectAllSearchableColumns");
         expect(selectAllCheck.checked).toEqual(true);
         fireEvent.click(selectAllCheck);
         expect(selectAllCheck.checked).toEqual(false);
         fireEvent.click(selectAllCheck);
         expect(selectAllCheck.checked).toEqual(true);
 
-        const selectSingleCheck = getByTestId("Flight");
+        const selectSingleCheck = getByTestId(
+            "selectSingleSearchableColumn_column_6"
+        );
         expect(selectSingleCheck.checked).toEqual(true);
         fireEvent.click(selectSingleCheck);
         expect(selectSingleCheck.checked).toEqual(false);
         fireEvent.click(selectSingleCheck);
         expect(selectSingleCheck.checked).toEqual(true);
     });
-    it("should check all file types and export data", async () => {
+    it("should check all file types and export data", () => {
         const { getByTestId } = render(
             <ExportData
                 isExportOverlayOpen
                 toggleExportDataOverlay={mocktoggleExportDataOverlay}
                 rows={mockRows}
-                originalColumns={mockOriginalColumns}
                 columns={mockColumns}
-                isRowExpandEnabled
-                isExpandContentAvailable
-                additionalColumn={[mockAdditionalColumn]}
+                additionalColumn={mockAdditionalColumn}
             />,
             container
         );
-        const gricContainer = await waitFor(() => container);
-        const selectAllCheck = getByTestId("select-all-checkbox");
+        const selectAllCheck = getByTestId("selectAllSearchableColumns");
         expect(selectAllCheck.checked).toEqual(true);
         const selectPdf = getByTestId("chk_pdf_test");
         fireEvent.click(selectPdf);
@@ -427,11 +336,8 @@ describe("Export Data unit test", () => {
                 isExportOverlayOpen
                 toggleExportDataOverlay={mocktoggleExportDataOverlay}
                 rows={mockRows}
-                originalColumns={mockOriginalColumns}
                 columns={mockColumns}
-                isRowExpandEnabled
-                isExpandContentAvailable
-                additionalColumn={[mockAdditionalColumn]}
+                additionalColumn={mockAdditionalColumn}
             />,
             container
         );
@@ -443,15 +349,12 @@ describe("Export Data unit test", () => {
                 isExportOverlayOpen
                 toggleExportDataOverlay={mocktoggleExportDataOverlay}
                 rows={mockRows}
-                originalColumns={mockOriginalColumns}
                 columns={mockColumns}
-                isRowExpandEnabled
-                isExpandContentAvailable
-                additionalColumn={[mockAdditionalColumn]}
+                additionalColumn={mockAdditionalColumn}
             />,
             container
         );
-        const selectAllCheck = getByTestId("select-all-checkbox");
+        const selectAllCheck = getByTestId("selectAllSearchableColumns");
         fireEvent.click(selectAllCheck);
         expect(selectAllCheck.checked).toEqual(false);
         const selectPdf = getByTestId("chk_pdf_test");
@@ -467,15 +370,12 @@ describe("Export Data unit test", () => {
                 isExportOverlayOpen
                 toggleExportDataOverlay={mocktoggleExportDataOverlay}
                 rows={mockRows}
-                originalColumns={mockOriginalColumns}
                 columns={mockColumns}
-                isRowExpandEnabled
-                isExpandContentAvailable
-                additionalColumn={[mockAdditionalColumn]}
+                additionalColumn={mockAdditionalColumn}
             />,
             container
         );
-        const selectAllCheck = getByTestId("select-all-checkbox");
+        const selectAllCheck = getByTestId("selectAllSearchableColumns");
         fireEvent.click(selectAllCheck);
         expect(selectAllCheck.checked).toEqual(false);
         const selectPdf = getByTestId("chk_pdf_test");
@@ -489,15 +389,12 @@ describe("Export Data unit test", () => {
                 isExportOverlayOpen
                 toggleExportDataOverlay={mocktoggleExportDataOverlay}
                 rows={mockRows}
-                originalColumns={mockOriginalColumns}
                 columns={mockColumns}
-                isRowExpandEnabled
-                isExpandContentAvailable
-                additionalColumn={[mockAdditionalColumn]}
+                additionalColumn={mockAdditionalColumn}
             />,
             container
         );
-        const selectAllCheck = getByTestId("select-all-checkbox");
+        const selectAllCheck = getByTestId("selectAllSearchableColumns");
         expect(selectAllCheck.checked).toEqual(true);
         const selectPdf = getByTestId("chk_pdf_test");
         expect(selectPdf.checked).toEqual(false);
@@ -509,15 +406,12 @@ describe("Export Data unit test", () => {
                 isExportOverlayOpen
                 toggleExportDataOverlay={mocktoggleExportDataOverlay}
                 rows={mockRows}
-                originalColumns={mockOriginalColumns}
                 columns={mockColumns}
-                isRowExpandEnabled
-                isExpandContentAvailable
-                additionalColumn={[mockAdditionalColumn]}
+                additionalColumn={mockAdditionalColumn}
             />,
             container
         );
-        const filterList = getByTestId("search");
+        const filterList = getByTestId("filterColumnsList");
         expect(filterList.value).toBe("");
         fireEvent.change(filterList, { target: { value: "id" } });
         expect(filterList.value).toBe("id");
@@ -530,20 +424,24 @@ describe("Export Data unit test", () => {
                 isExportOverlayOpen
                 toggleExportDataOverlay={mocktoggleExportDataOverlay}
                 rows={mockRows}
-                originalColumns={mockOriginalColumns}
                 columns={mockColumns}
-                isRowExpandEnabled
-                isExpandContentAvailable
-                additionalColumn={[mockAdditionalColumn]}
+                additionalColumn={mockAdditionalColumn}
             />,
             container
         );
-        const selectAllCheck = getByTestId("select-all-checkbox");
+        const selectAllCheck = getByTestId("selectAllSearchableColumns");
         fireEvent.click(selectAllCheck);
         expect(selectAllCheck.checked).toEqual(false);
-        const singleColumn = getByTestId("SR");
+        const singleColumn = getByTestId(
+            "selectSingleSearchableColumn_column_6"
+        );
         fireEvent.click(singleColumn);
         expect(singleColumn.checked).toEqual(true);
+        const remarksColumn = getByTestId(
+            "selectSingleSearchableColumn_rowExpand"
+        );
+        fireEvent.click(remarksColumn);
+        expect(remarksColumn.checked).toEqual(true);
         const selectCsv = getByTestId("chk_csv_test");
         fireEvent.click(selectCsv);
         expect(selectCsv.checked).toEqual(true);

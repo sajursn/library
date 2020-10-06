@@ -24,40 +24,56 @@ const HTML5toTouch = {
     ]
 };
 
-const originalColumns = [
+const columns = [
     {
         Header: "Flight",
         accessor: "flight",
-        columnId: "flight-id",
+        columnId: "column_1",
         width: 100,
         innerCells: [
             {
                 Header: "Flight No",
-                accessor: "flightno"
+                accessor: "flightno",
+                cellId: "column_1_cell_0",
+                display: true,
+                isSearchable: true
             },
             {
                 Header: "Date",
-                accessor: "date"
+                accessor: "date",
+                cellId: "column_1_cell_1",
+                display: true,
+                isSearchable: true
             }
         ],
-        sortValue: "flightno"
+        sortValue: "flightno",
+        display: true,
+        isSearchable: true
     },
     {
         Header: "Flight1",
         accessor: "flight1",
-        columnId: "flight1-id",
+        columnId: "column_2",
         width: 100,
         innerCells: [
             {
                 Header: "Flight No1",
-                accessor: "flightno1"
+                accessor: "flightno1",
+                cellId: "column_2_cell_0",
+                display: true,
+                isSearchable: true
             },
             {
                 Header: "Date1",
-                accessor: "date1"
+                accessor: "date1",
+                cellId: "column_2_cell_1",
+                display: true,
+                isSearchable: true
             }
         ],
-        sortValue: "flightno1"
+        sortValue: "flightno1",
+        display: true,
+        isSearchable: true
     }
 ];
 
@@ -106,7 +122,7 @@ describe("testing sort item ", () => {
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <SortingList
                     sortOptions={sortOptions}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     updateSortingOptions={updateSortingOptions}
                 />
             </DndProvider>
@@ -133,7 +149,7 @@ describe("testing sort item ", () => {
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <SortingList
                     sortOptions={sortOptions}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     updateSortingOptions={updateSortingOptions}
                 />
             </DndProvider>
@@ -152,7 +168,7 @@ describe("testing sort item ", () => {
                 backend={MultiBackend}
                 options={HTML5toTouch}
                 sortOptions={sortOptions}
-                originalColumns={originalColumns}
+                columns={columns}
                 updateSortingOptions={updateSortingOptions}
                 updateSingleSortingOption={updateSingleSortingOption}
                 copySortOption={copySortOption}
@@ -160,7 +176,7 @@ describe("testing sort item ", () => {
             >
                 <SortItem
                     id={0}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     sortOption={singleSortOption}
                     moveSort={moveSortMock}
                     findSort={findSortMock}
@@ -181,7 +197,7 @@ describe("testing sort item ", () => {
                 backend={MultiBackend}
                 options={HTML5toTouch}
                 sortOptions={sortOptions}
-                originalColumns={originalColumns}
+                columns={columns}
                 updateSortingOptions={updateSortingOptions}
                 updateSingleSortingOption={updateSingleSortingOption}
                 copySortOption={copySortOption}
@@ -189,7 +205,7 @@ describe("testing sort item ", () => {
             >
                 <SortItem
                     id={0}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     sortOption={singleSortOption}
                     moveSort={moveSortMock}
                     findSort={findSortMock}
@@ -242,7 +258,7 @@ describe("testing sort item ", () => {
                 backend={MultiBackend}
                 options={HTML5toTouch}
                 sortOptions={sortOptions}
-                originalColumns={originalColumns}
+                columns={columns}
                 updateSortingOptions={updateSortingOptions}
                 updateSingleSortingOption={updateSingleSortingOption}
                 copySortOption={copySortOption}
@@ -250,7 +266,7 @@ describe("testing sort item ", () => {
             >
                 <SortItem
                     id={0}
-                    originalColumns={originalColumns}
+                    columns={columns}
                     sortOption={singleSortOption}
                     moveSort={moveSortMock}
                     findSort={findSortMock}
