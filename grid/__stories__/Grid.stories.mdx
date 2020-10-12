@@ -25,91 +25,28 @@ import CustomPanel from "./panels/CustomPanel";
 ### Code
 
 ```jsx
-import "./example.css";
-import { Grid } from "@neo-ui/grid";
-import FlightIcon from "./images/FlightIcon.png";
-import { fetchData } from "./getData";
-import { getValueOfDate } from "./utils/DateUtility";
-import FlightEdit from "./cells/FlightEdit";
-import SrEdit from "./cells/SrEdit";
-import SegmentEdit from "./cells/SegmentEdit";
-import RowEdit from "./cells/RowEdit";
-import CustomPanel from "./panels/CustomPanel";
-
 const GridComponent = () => {
-    const idAttribute = "travelId";
-    const { search } = window.location;
-    const urlPageSize = search
-        ? parseInt(search.replace("?pagesize=", ""), 10)
-        : NaN;
-    const pageSize = !Number.isNaN(urlPageSize) ? Number(urlPageSize) : 300;
-    // State for holding index value for API call
-    const [index, setIndex] = useState(0);
-    // State for holding grid data
-    const [gridData, setGridData] = useState([]);
-    // State for notifying if next page is available or not
-    const [isNextPageAvailable, setIsNextPageAvailable] = useState(false);
-    // State for holding selected rows
-    const [userSelectedRows, setUserSelectedRows] = useState([]);
-    // State for holding rows to deselect
-    const [rowsToDeselect, setRowsToDeselect] = useState([]);
+    // By default grid will consider paginationType value as "index".
+    const paginationType = "index"; // or - paginationType = "cursor".
 
-    const airportCodeList = [
-        "AAA",
-        "AAB",
-        "AAC",
-        "ABA",
-        "ABB",
-        "ABC",
-        "ACA",
-        "ACB",
-        "ACC",
-        "BAA",
-        "BAB",
-        "BAC",
-        "BBA",
-        "BBB",
-        "BBC",
-        "BCA",
-        "BCB",
-        "BCC",
-        "CAA",
-        "CAB",
-        "CAC",
-        "CBA",
-        "CBB",
-        "CBC",
-        "CCA",
-        "CCB",
-        "CCC",
-        "XXX",
-        "XXY",
-        "XXZ",
-        "XYX",
-        "XYY",
-        "XYZ",
-        "XZX",
-        "XZY",
-        "XZZ",
-        "YXX",
-        "YXY",
-        "YXZ",
-        "YYX",
-        "YYY",
-        "YYZ",
-        "YZX",
-        "YZY",
-        "YZZ",
-        "ZXX",
-        "ZXY",
-        "ZXZ",
-        "ZYX",
-        "ZYY",
-        "ZYZ",
-        "ZZX",
-        "ZZY",
-        "ZZZ"
-    ];
+    // If paginationType = "index"
+    const pageInfo = {
+        pageNum: 1,
+        pageSize: 300,
+        total: 20000,
+        lastPage: false // or - true
+    };
+    // Else if paginationType = "cursor"
+    const pageInfo = {
+        endCursor: 299,
+        pageSize: 300,
+        total: 20000,
+        lastPage: false // or - true
+    };
+
+    const idAttribute = "travelId";
+
+    const gridData = [{...}, {...}]; // JSON Data
 
     const columns = [
         {
@@ -117,6 +54,9 @@ const GridComponent = () => {
             accessor: "travelId",
             width: 50,
             disableFilters: true,
+            disableSortBy: true,
+            disableResizing: true,
+            isSearchable: true,
             displayCell: (rowData) => {
                 const { travelId } = rowData;
                 return (
@@ -133,14 +73,17 @@ const GridComponent = () => {
             innerCells: [
                 {
                     Header: "Flight No",
-                    accessor: "flightno"
+                    accessor: "flightno",
+                    isSearchable: true
                 },
                 {
                     Header: "Date",
-                    accessor: "date"
+                    accessor: "date",
+                    isSearchable: true
                 }
             ],
             sortValue: "flightno",
+            isSearchable: true,
             displayCell: (rowData, DisplayTag) => {
                 const { flightno, date } = rowData.flight;
                 return (
@@ -163,511 +106,19 @@ const GridComponent = () => {
                     />
                 );
             }
-        },
-        {
-            Header: "Segment",
-            accessor: "segment",
-            width: 100,
-            innerCells: [
-                {
-                    Header: "From",
-                    accessor: "from"
-                },
-                {
-                    Header: "To",
-                    accessor: "to"
-                }
-            ],
-            disableSortBy: true,
-            displayCell: (rowData, DisplayTag) => {
-                const { from, to } = rowData.segment;
-                return (
-                    <div className="segment-details">
-                        <DisplayTag columnKey="segment" cellKey="from">
-                            <span>{from}</span>
-                        </DisplayTag>
-                        <i>
-                            <img src={FlightIcon} alt="segment" />
-                        </i>
-                        <DisplayTag columnKey="segment" cellKey="to">
-                            <span>{to}</span>
-                        </DisplayTag>
-                    </div>
-                );
-            },
-            editCell: (rowData, DisplayTag, rowUpdateCallBack) => {
-                return (
-                    <SegmentEdit
-                        airportCodeList={airportCodeList}
-                        rowData={rowData}
-                        DisplayTag={DisplayTag}
-                        rowUpdateCallBack={rowUpdateCallBack}
-                    />
-                );
-            }
-        },
-        {
-            Header: "Details",
-            accessor: "details",
-            onlyInDesktop: true,
-            width: 300,
-            innerCells: [
-                {
-                    Header: "Flight Model",
-                    accessor: "flightModel"
-                },
-                {
-                    Header: "Body Type",
-                    accessor: "bodyType"
-                },
-                {
-                    Header: "Type",
-                    accessor: "type"
-                },
-                {
-                    Header: "Start Time",
-                    accessor: "startTime"
-                },
-                {
-                    Header: "End Time",
-                    accessor: "endTime"
-                },
-                {
-                    Header: "Status",
-                    accessor: "status"
-                },
-                {
-                    Header: "Additional Status",
-                    accessor: "additionalStatus"
-                },
-                {
-                    Header: "Time Status",
-                    accessor: "timeStatus"
-                }
-            ],
-            disableSortBy: true,
-            displayCell: (rowData, DisplayTag, isExpanded) => {
-                const {
-                    startTime,
-                    endTime,
-                    status,
-                    additionalStatus,
-                    flightModel,
-                    bodyType,
-                    type,
-                    timeStatus
-                } = rowData.details;
-                const timeStatusArray = timeStatus ? timeStatus.split(" ") : [];
-                const timeValue = timeStatusArray.shift();
-                const timeText = timeStatusArray.join(" ");
-                if (isExpanded === null || isExpanded === true) {
-                    return (
-                        <div className="details-wrap">
-                            <ul>
-                                <li>
-                                    <DisplayTag
-                                        columnKey="details"
-                                        cellKey="startTime"
-                                    >
-                                        {startTime}
-                                    </DisplayTag>
-                                    -<DisplayTag
-                                        columnKey="details"
-                                        cellKey="endTime"
-                                    >
-                                        {endTime}
-                                    </DisplayTag>
-                                </li>
-                                <li className="divider">|</li>
-                                <li>
-                                    <DisplayTag
-                                        columnKey="details"
-                                        cellKey="status"
-                                    >
-                                        <span>{status}</span>
-                                    </DisplayTag>
-                                </li>
-                                <li className="divider">|</li>
-                                <li>
-                                    <DisplayTag
-                                        columnKey="details"
-                                        cellKey="additionalStatus"
-                                    >
-                                        {additionalStatus}
-                                    </DisplayTag>
-                                </li>
-                                <li className="divider">|</li>
-                                <li>
-                                    <DisplayTag
-                                        columnKey="details"
-                                        cellKey="flightModel"
-                                    >
-                                        {flightModel}
-                                    </DisplayTag>
-                                </li>
-                                <li className="divider">|</li>
-                                <li>
-                                    <DisplayTag
-                                        columnKey="details"
-                                        cellKey="bodyType"
-                                    >
-                                        {bodyType}
-                                    </DisplayTag>
-                                </li>
-                                <li className="divider">|</li>
-                                <li>
-                                    <span>
-                                        <DisplayTag
-                                            columnKey="details"
-                                            cellKey="type"
-                                        >
-                                            {type}
-                                        </DisplayTag>
-                                    </span>
-                                </li>
-                                <li className="divider">|</li>
-                                <li>
-                                    <DisplayTag
-                                        columnKey="details"
-                                        cellKey="timeStatus"
-                                    >
-                                        <strong>{timeValue} </strong>
-                                        <span>{timeText}</span>
-                                    </DisplayTag>
-                                </li>
-                            </ul>
-                        </div>
-                    );
-                }
-                return (
-                    <div className="details-wrap">
-                        <ul>
-                            <li>
-                                <DisplayTag
-                                    columnKey="details"
-                                    cellKey="startTime"
-                                >
-                                    {startTime}
-                                </DisplayTag>
-                                -<DisplayTag
-                                    columnKey="details"
-                                    cellKey="endTime"
-                                >
-                                    {endTime}
-                                </DisplayTag>
-                            </li>
-                            <li className="divider">|</li>
-                            <li>
-                                <DisplayTag
-                                    columnKey="details"
-                                    cellKey="status"
-                                >
-                                    <span>{status}</span>
-                                </DisplayTag>
-                            </li>
-                            <li className="divider">|</li>
-                            <li>
-                                <DisplayTag
-                                    columnKey="details"
-                                    cellKey="flightModel"
-                                >
-                                    {flightModel}
-                                </DisplayTag>
-                            </li>
-                            <li className="divider">|</li>
-                            <li>
-                                <DisplayTag
-                                    columnKey="details"
-                                    cellKey="bodyType"
-                                >
-                                    {bodyType}
-                                </DisplayTag>
-                            </li>
-                            <li className="divider">|</li>
-                            <li>
-                                <span>
-                                    <DisplayTag
-                                        columnKey="details"
-                                        cellKey="type"
-                                    >
-                                        {type}
-                                    </DisplayTag>
-                                </span>
-                            </li>
-                            <li className="divider">|</li>
-                            <li>
-                                <DisplayTag
-                                    columnKey="details"
-                                    cellKey="timeStatus"
-                                >
-                                    <strong>{timeValue} </strong>
-                                    <span>{timeText}</span>
-                                </DisplayTag>
-                            </li>
-                        </ul>
-                    </div>
-                );
-            }
-        },
-        {
-            Header: "Weight",
-            accessor: "weight",
-            width: 130,
-            innerCells: [
-                {
-                    Header: "Percentage",
-                    accessor: "percentage"
-                },
-                {
-                    Header: "Value",
-                    accessor: "value"
-                }
-            ],
-            sortValue: "percentage",
-            displayCell: (rowData, DisplayTag) => {
-                const { percentage, value } = rowData.weight;
-                const splitValue = value ? value.split("/") : [];
-                let valuePrefix;
-                let valueSuffix = "";
-                if (splitValue.length === 2) {
-                    valuePrefix = splitValue[0];
-                    valueSuffix = splitValue[1];
-                }
-                return (
-                    <div className="weight-details">
-                        <DisplayTag columnKey="weight" cellKey="percentage">
-                            <strong className="per">{percentage}</strong>
-                        </DisplayTag>
-                        <DisplayTag columnKey="weight" cellKey="value">
-                            <span>
-                                <strong>{valuePrefix}/</strong>
-                                {valueSuffix}
-                            </span>
-                        </DisplayTag>
-                    </div>
-                );
-            }
-        },
-        {
-            Header: "Volume",
-            accessor: "volume",
-            width: 100,
-            innerCells: [
-                {
-                    Header: "Percentage",
-                    accessor: "percentage"
-                },
-                {
-                    Header: "Value",
-                    accessor: "value"
-                }
-            ],
-            sortValue: "percentage",
-            displayCell: (rowData, DisplayTag) => {
-                const { percentage, value } = rowData.volume;
-                const splitValue = value ? value.split("/") : [];
-                let valuePrefix;
-                let valueSuffix = "";
-                if (splitValue.length === 2) {
-                    valuePrefix = splitValue[0];
-                    valueSuffix = splitValue[1];
-                }
-                return (
-                    <div className="weight-details">
-                        <DisplayTag columnKey="volume" cellKey="percentage">
-                            <strong className="per">{percentage}</strong>
-                        </DisplayTag>
-                        <DisplayTag columnKey="volume" cellKey="value">
-                            <span>
-                                <strong>{valuePrefix}/</strong>
-                                {valueSuffix}
-                            </span>
-                        </DisplayTag>
-                    </div>
-                );
-            }
-        },
-        {
-            Header: "ULD Positions",
-            accessor: "uldPositions",
-            width: 120,
-            innerCells: [
-                {
-                    Header: "Position",
-                    accessor: "position"
-                },
-                {
-                    Header: "Value",
-                    accessor: "value"
-                }
-            ],
-            disableSortBy: true,
-            displayCell: (rowData, DisplayTag) => {
-                const { uldPositions } = rowData;
-                return (
-                    <div className="uld-details">
-                        <ul>
-                            {uldPositions.map((positions) => {
-                                const { position, value } = positions;
-                                return (
-                                    <li key={`${position}_${value}`}>
-                                        <DisplayTag
-                                            columnKey="uldPositions"
-                                            cellKey="position"
-                                        >
-                                            <span>{positions.position}</span>
-                                        </DisplayTag>
-                                        <DisplayTag
-                                            columnKey="uldPositions"
-                                            cellKey="value"
-                                        >
-                                            <strong>{positions.value}</strong>
-                                        </DisplayTag>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-                );
-            }
-        },
-        {
-            Header: "Revenue/Yield",
-            accessor: "revenue",
-            width: 120,
-            innerCells: [
-                {
-                    Header: "Revenue",
-                    accessor: "revenue"
-                },
-                {
-                    Header: "Yeild",
-                    accessor: "yeild"
-                }
-            ],
-            displayCell: (rowData, DisplayTag) => {
-                const { revenue, yeild } = rowData.revenue;
-                return (
-                    <div className="revenue-details">
-                        <DisplayTag columnKey="revenue" cellKey="revenue">
-                            <span className="large">{revenue}</span>
-                        </DisplayTag>
-                        <DisplayTag columnKey="revenue" cellKey="yeild">
-                            <span>{yeild}</span>
-                        </DisplayTag>
-                    </div>
-                );
-            },
-            sortValue: "revenue"
-        },
-        {
-            Header: "SR",
-            accessor: "sr",
-            width: 90,
-            displayCell: (rowData) => {
-                const { sr } = rowData;
-                return (
-                    <div className="sr-details">
-                        <span>{sr}</span>
-                    </div>
-                );
-            },
-            editCell: (rowData, DisplayTag, rowUpdateCallBack) => {
-                return (
-                    <SrEdit
-                        rowData={rowData}
-                        rowUpdateCallBack={rowUpdateCallBack}
-                    />
-                );
-            }
-        },
-        {
-            Header: "Queued Booking",
-            accessor: "queuedBooking",
-            width: 130,
-            innerCells: [
-                {
-                    Header: "Sr",
-                    accessor: "sr"
-                },
-                {
-                    Header: "Volume",
-                    accessor: "volume"
-                }
-            ],
-            disableSortBy: true,
-            displayCell: (rowData, DisplayTag) => {
-                const { sr, volume } = rowData.queuedBooking;
-                return (
-                    <div className="queued-details">
-                        <DisplayTag columnKey="queuedBooking" cellKey="sr">
-                            <span>
-                                <strong>{sr}</strong>
-                            </span>
-                        </DisplayTag>
-                        <DisplayTag columnKey="queuedBooking" cellKey="volume">
-                            <span>
-                                <strong>{volume}</strong>
-                            </span>
-                        </DisplayTag>
-                    </div>
-                );
-            }
         }
     ];
 
     const columnToExpand = {
         Header: "Remarks",
-        innerCells: [
-            { Header: "Remarks", accessor: "remarks" },
-            { Header: "Details", onlyInTablet: true, accessor: "details" }
-        ],
+        innerCells: [{ Header: "Remarks", accessor: "remarks" }],
         displayCell: (rowData, DisplayTag) => {
-            const { remarks, details } = rowData;
-            const {
-                startTime,
-                endTime,
-                status,
-                additionalStatus,
-                flightModel,
-                bodyType,
-                type,
-                timeStatus
-            } = details || {};
-            const timeStatusArray = timeStatus ? timeStatus.split(" ") : [];
-            const timeValue = timeStatusArray.shift();
-            const timeText = timeStatusArray.join(" ");
+            const { remarks } = rowData;
             return (
-                <div className="details-wrap">
+                <div className="remarks-wrap details-wrap">
                     <DisplayTag columnKey="remarks" cellKey="remarks">
                         <ul>
                             <li>{remarks}</li>
-                        </ul>
-                    </DisplayTag>
-                    <DisplayTag columnKey="details" cellKey="details">
-                        <ul>
-                            <li>
-                                {startTime} - {endTime}
-                            </li>
-                            <li className="divider">|</li>
-                            <li>
-                                <span>{status}</span>
-                            </li>
-                            <li className="divider">|</li>
-                            <li>{additionalStatus}</li>
-                            <li className="divider">|</li>
-                            <li>{flightModel}</li>
-                            <li className="divider">|</li>
-                            <li>{bodyType}</li>
-                            <li className="divider">|</li>
-                            <li>
-                                <span>{type}</span>
-                            </li>
-                            <li className="divider">|</li>
-                            <li>
-                                <strong>{timeValue} </strong>
-                                <span>{timeText}</span>
-                            </li>
                         </ul>
                     </DisplayTag>
                 </div>
@@ -676,57 +127,20 @@ const GridComponent = () => {
     };
 
     const getRowEditOverlay = (rowData, DisplayTag, rowUpdateCallBack) => {
-        return (
-            <RowEdit
-                airportCodeList={airportCodeList}
-                DisplayTag={DisplayTag}
-                rowData={rowData}
-                rowUpdateCallBack={rowUpdateCallBack}
-            />
-        );
+        // Create a component for the row edit overlay and bind required row data to the overlay.
+        // Use DisplayTag if any of the column data or inner cell data has to be controlled by the column chooser functionality in Grid.
+        // Call back rowUpdateCallBack, whenever user is making any updates to the data from this overlay.
+        // From this function return that react.
     };
 
     const calculateRowHeight = (row, gridColumns) => {
-        // Minimum height for each row
-        let rowHeight = 50;
-        if (gridColumns && gridColumns.length > 0 && row) {
-            // Get properties of a row
-            const { original, isExpanded } = row;
-            // Find the column with maximum width configured, from grid columns list
-            const columnWithMaxWidth = [...gridColumns].sort((a, b) => {
-                return b.width - a.width;
-            })[0];
-            // Get column properties including the user resized column width (totalFlexWidth)
-            const { id, width, totalFlexWidth } = columnWithMaxWidth;
-            // Get row value of that column
-            const rowValue = original[id];
-            if (rowValue) {
-                // Find the length of text of data in that column
-                const textLength = Object.values(rowValue).join(",").length;
-                // This is a formula that was created for the test data used.
-                rowHeight += Math.ceil((75 * textLength) / totalFlexWidth);
-                const widthVariable =
-                    totalFlexWidth > width
-                        ? totalFlexWidth - width
-                        : width - totalFlexWidth;
-                rowHeight += widthVariable / 1000;
-            }
-            // Add logic to increase row height if row is expanded
-            if (isExpanded && columnToExpand) {
-                // Increase height based on the number of inner cells in additional columns
-                rowHeight +=
-                    columnToExpand.innerCells &&
-                    columnToExpand.innerCells.length > 0
-                        ? columnToExpand.innerCells.length * 35
-                        : 35;
-            }
-        }
-        return rowHeight;
+        // Calculate the hight of a row using the row data and the columns width and return an integer value.
+        return 80;
     };
 
     const rowActions = [
-        { label: "edit" },
-        { label: "delete" },
+        { label: "edit" }, // Value is not required
+        { label: "delete" }, // Value is not required
         { label: "Send SCR", value: "SCR" },
         { label: "Segment Summary", value: "SegmentSummary" },
         { label: "Open Summary", value: "OpenSummary" },
@@ -734,124 +148,77 @@ const GridComponent = () => {
     ];
 
     const rowActionCallback = (rowData, actionValue) => {
-        console.log(`Row action: ${actionValue}`);
-        console.log(rowData);
+        // Grid will call this function whenever user is clicking any of the row actions items other than "edit" and "delete".
+        // Corresponding row data and the actionValue of the clicked rowAction will be passed in as parameters.
     };
 
     const onRowUpdate = (originalRow, updatedRow) => {
-        setGridData((old) =>
-            old.map((row) => {
-                let newRow = row;
-                if (
-                    Object.entries(row).toString() ===
-                    Object.entries(originalRow).toString()
-                ) {
-                    newRow = updatedRow;
-                }
-                return newRow;
-            })
-        );
+        // Grid will call this function whenever user edits a cell or a row.
+        // Row data before editing and the updated row data after editing will be passed as parameters.
+        // Using these data, update the data source and rerender the Grid.
     };
 
     const onRowDelete = (originalRow) => {
-        setGridData((old) =>
-            old.filter((row) => {
-                return row !== originalRow;
-            })
-        );
+        // Grid will call this function when user is deleting a row.
+        // Deleted row data will be passed in as parameter.
+        // Using this data, update the data source and rerender the Grid.
     };
 
     const onRowSelect = (selectedRows) => {
-        console.log("Rows selected: ");
-        console.log(selectedRows);
-        setUserSelectedRows(selectedRows);
+        // Grid will call this function when user selects or deselects a row.
+        // An array of all selected row data will be passed in as parameter.
     };
+
+    // This should be an array of idAttribute values of rows that has to be delected from the Grid
+    const rowsToDeselect = [];
 
     const onGridRefresh = () => {
-        console.log("Grid Refrehsed ");
+        // Grid will show a refresh icon in the Grid header region if this function is passed as prop to the Grid.
+        // Grid will call this function when user cliks that icon.
     };
 
-    const loadMoreData = () => {
-        fetchData(index, pageSize).then((data) => {
-            if (data && data.length > 0) {
-                setGridData(gridData.concat(data));
-                setIndex(index + pageSize);
-            } else {
-                setIsNextPageAvailable(false);
-            }
-        });
+    const loadMoreData = (updatedPageInfo) => {
+        // Grid will call this function only if pageInfo is passed a prop to Grid and the value of lastPage in the pageInfo is false.
+        // This function is called when user reaches bottom row of the grid by scrolling down.
+        // Grid passes in a parameter updatedPageInfo.
+        // If paginationType is "index", updatedPageInfo will be { (pageNum + 1), pageSize}
+        // Else if paginationType is "cursor", updatedPageInfo will be { endCursor, pageSize}
+        // Based on the updatedPageInfo, make API call and re-render grid with updated data.
     };
 
-    useEffect(() => {
-        fetchData(index, pageSize).then((data) => {
-            if (data && data.length > 0) {
-                setGridData(data);
-                setIndex(index + pageSize);
-            } else {
-                setIsNextPageAvailable(false);
-            }
-        });
-    }, []);
+    // This should be react component, which will be rendered into the Grid header.
+    const CustomPanel = <CustomPanel />
 
-    const removeRowSelection = (event) => {
-        const rowId = event.currentTarget.dataset.id;
-        setRowsToDeselect([Number(rowId)]);
-    };
-
-    if (gridData && gridData.length > 0 && columns && columns.length > 0) {
-        return (
-            <div>
-                <div className="selectedRows">
-                    {userSelectedRows.map((row) => {
-                        return (
-                            <div className="selectedRow" key={row.travelId}>
-                                <p>Travel Id : {row.travelId}</p>
-                                <button
-                                    type="button"
-                                    onClick={removeRowSelection}
-                                    data-id={row.travelId}
-                                >
-                                    Remove
-                                </button>
-                            </div>
-                        );
-                    })}
-                </div>
-                <Grid
-                    className="icargoCustomClass"
-                    title="AWBs"
-                    gridHeight="80vh"
-                    gridWidth="100%"
-                    gridData={gridData}
-                    idAttribute={idAttribute}
-                    isNextPageAvailable={isNextPageAvailable}
-                    loadMoreData={loadMoreData}
-                    columns={columns}
-                    columnToExpand={columnToExpand}
-                    rowActions={rowActions}
-                    rowActionCallback={rowActionCallback}
-                    getRowEditOverlay={getRowEditOverlay}
-                    calculateRowHeight={calculateRowHeight}
-                    expandableColumn
-                    onRowUpdate={onRowUpdate}
-                    onRowDelete={onRowDelete}
-                    onRowSelect={onRowSelect}
-                    onGridRefresh={onGridRefresh}
-                    CustomPanel={CustomPanel}
-                    rowsToDeselect={rowsToDeselect}
-                    globalSearch
-                    columnFilter
-                    groupSort
-                    columnChooser
-                    exportData
-                />
-            </div>
-        );
-    }
     return (
-        <h2 style={{ textAlign: "center", marginTop: "70px" }}>
-            Initializing Grid...
-        </h2>
+        <Grid
+            className="icargoCustomClass"
+            title="AWBs"
+            gridHeight="80vh"
+            gridWidth="100%"
+            gridData={gridData} // *Required
+            idAttribute={idAttribute} // *Required
+            paginationType={paginationType}
+            pageInfo={pageInfo}
+            loadMoreData={loadMoreData}
+            columns={columns} // *Required
+            columnToExpand={columnToExpand}
+            rowActions={rowActions}
+            rowActionCallback={rowActionCallback}
+            getRowEditOverlay={getRowEditOverlay}
+            calculateRowHeight={calculateRowHeight} // *Required
+            expandableColumn
+            onRowUpdate={onRowUpdate}
+            onRowDelete={onRowDelete}
+            onRowSelect={onRowSelect}
+            onGridRefresh={onGridRefresh}
+            CustomPanel={CustomPanel}
+            rowsToDeselect={rowsToDeselect}
+            globalSearch
+            columnFilter
+            groupSort
+            columnChooser
+            exportData
+        />
     );
 };
 
@@ -943,6 +310,26 @@ export default GridComponent;
 </Story>
 
 ```jsx
+const columnToExpand = {
+    Header: "Remarks",
+    innerCells: [
+        { Header: "Remarks", accessor: "remarks" },
+        { Header: "Details", onlyInTablet: true, accessor: "details" }
+    ],
+    displayCell: (rowData, DisplayTag) => {
+        const { remarks } = rowData;
+        return (
+            <div className="remarks-wrap details-wrap">
+                <DisplayTag columnKey="remarks" cellKey="remarks">
+                    <ul>
+                        <li>{remarks}</li>
+                    </ul>
+                </DisplayTag>
+            </div>
+        );
+    }
+};
+
 <Grid
     gridData={gridData}
     idAttribute={idAttribute}
@@ -952,7 +339,7 @@ export default GridComponent;
     onRowUpdate={onRowUpdate}
     onRowDelete={onRowDelete}
     onRowSelect={onRowSelect}
-/>
+/>;
 ```
 
 #### With column expansion
@@ -962,6 +349,8 @@ export default GridComponent;
 </Story>
 
 ```jsx
+expandableColumn = true // or - expandableColumn = false
+
 <Grid
     gridData={gridData}
     idAttribute={idAttribute}
@@ -981,6 +370,39 @@ export default GridComponent;
 </Story>
 
 ```jsx
+const rowActions = [
+    { label: "edit" }, // Value is not required
+    { label: "delete" }, // Value is not required
+    { label: "Send SCR", value: "SCR" },
+    { label: "Segment Summary", value: "SegmentSummary" },
+    { label: "Open Summary", value: "OpenSummary" },
+    { label: "Close Summary", value: "CloseSummary" }
+];
+
+const rowActionCallback = (rowData, actionValue) => {
+    // Grid will call this function whenever user is clicking any of the row actions items other than "edit" and "delete".
+    // Corresponding row data and the actionValue of the clicked rowAction will be passed in as parameters.
+};
+
+const getRowEditOverlay = (rowData, DisplayTag, rowUpdateCallBack) => {
+    // Create a component for the row edit overlay and bind required row data to the overlay.
+    // Use DisplayTag if any of the column data or inner cell data has to be controlled by the column chooser functionality in Grid.
+    // Call back rowUpdateCallBack, whenever user is making any updates to the data from this overlay.
+    // From this function return that react.
+};
+
+const onRowUpdate = (originalRow, updatedRow) => {
+    // Grid will call this function whenever user edits a cell or a row.
+    // Row data before editing and the updated row data after editing will be passed as parameters.
+    // Using these data, update the data source and rerender the Grid.
+};
+
+const onRowDelete = (originalRow) => {
+    // Grid will call this function when user is deleting a row.
+    // Deleted row data will be passed in as parameter.
+    // Using this data, update the data source and rerender the Grid.
+};
+
 <Grid
     gridData={gridData}
     idAttribute={idAttribute}
@@ -992,7 +414,7 @@ export default GridComponent;
     onRowUpdate={onRowUpdate}
     onRowDelete={onRowDelete}
     onRowSelect={onRowSelect}
-/>
+/>;
 ```
 
 #### With grid refresh
@@ -1002,6 +424,11 @@ export default GridComponent;
 </Story>
 
 ```jsx
+const onGridRefresh = () => {
+    // Grid will show a refresh icon in the Grid header region if this function is passed as prop to the Grid.
+    // Grid will call this function when user cliks that icon.
+};
+
 <Grid
     gridData={gridData}
     idAttribute={idAttribute}
@@ -1011,7 +438,7 @@ export default GridComponent;
     onRowDelete={onRowDelete}
     onRowSelect={onRowSelect}
     onGridRefresh={onGridRefresh}
-/>
+/>;
 ```
 
 #### With custom header panel
@@ -1021,6 +448,9 @@ export default GridComponent;
 </Story>
 
 ```jsx
+// This should be react component, which will be rendered into the Grid header.
+const CustomPanel = <CustomPanel />
+
 <Grid
     gridData={gridData}
     idAttribute={idAttribute}
@@ -1033,13 +463,16 @@ export default GridComponent;
 />
 ```
 
-#### With rows deselect
+#### With rows to be deselected
 
-<Story name="With rows deselect">
+<Story name="With rows to be deselected">
     <GridComponent enableRowDeselection />;
 </Story>
 
 ```jsx
+// This should be an array of idAttribute values of rows that has to be delected from the Grid
+const rowsToDeselect = [];
+
 <Grid
     gridData={gridData}
     idAttribute={idAttribute}
@@ -1049,27 +482,55 @@ export default GridComponent;
     onRowDelete={onRowDelete}
     onRowSelect={onRowSelect}
     rowsToDeselect={rowsToDeselect}
-/>
+/>;
 ```
 
 #### With pagination
 
 <Story name="With pagination">
-    <GridComponent isNextPageAvailableCheck />;
+    <GridComponent hasPagination />;
 </Story>
 
 ```jsx
+// By default grid will consider paginationType value as "index".
+const paginationType = "index"; // or - paginationType = "cursor".
+
+// If paginationType = "index"
+const pageInfo = {
+    pageNum: 1,
+    pageSize: 300,
+    total: 20000,
+    lastPage: false // or - lastPage: true
+};
+// Else if paginationType = "cursor"
+const pageInfo = {
+    endCursor: 299,
+    pageSize: 300,
+    total: 20000,
+    lastPage: false // or - lastPage: true
+};
+
+const loadMoreData = (updatedPageInfo) => {
+    // Grid will call this function only if pageInfo is passed a prop to Grid and the value of lastPage in the pageInfo is false.
+    // This function is called when user reaches bottom row of the grid by scrolling down.
+    // Grid passes in a parameter updatedPageInfo.
+    // If paginationType is "index", updatedPageInfo will be { (pageNum + 1), pageSize}
+    // Else if paginationType is "cursor", updatedPageInfo will be { endCursor, pageSize}
+    // Based on the updatedPageInfo, make API call and re-render grid with updated data.
+};
+
 <Grid
     gridData={gridData}
-    isNextPageAvailableCheck
-    loadMoreData={loadMoreData}
     idAttribute={idAttribute}
+    paginationType={paginationType}
+    pageInfo={gridPageInfo}
+    loadMoreData={loadMoreData}
     columns={columns}
     calculateRowHeight={calculateRowHeight}
     onRowUpdate={onRowUpdate}
     onRowDelete={onRowDelete}
     onRowSelect={onRowSelect}
-/>
+/>;
 ```
 
 #### Hide globalSearch
@@ -1175,7 +636,7 @@ export default GridComponent;
         title="AWBs"
         gridHeight="80vh"
         gridWidth="100%"
-        isNextPageAvailableCheck
+        hasPagination
         passColumnToExpand
         expandableColumn
         passRowActions
@@ -1200,7 +661,8 @@ export default GridComponent;
     gridWidth={gridWidth}
     gridData={gridData}
     idAttribute={idAttribute}
-    isNextPageAvailable={isNextPageAvailable}
+    paginationType={paginationType}
+    pageInfo={gridPageInfo}
     loadMoreData={loadMoreData}
     columns={columns}
     columnToExpand={columnToExpand}

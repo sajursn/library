@@ -24,7 +24,7 @@ export const findSelectedRows = (rows, selectedRowIds) => {
 
 export const findSelectedRowIdAttributes = (selectedRows, idAttribute) => {
     const rowIdentifiers = [];
-    if (selectedRows && selectedRows.length > 0) {
+    if (selectedRows && selectedRows.length > 0 && idAttribute) {
         selectedRows.forEach((row) => {
             rowIdentifiers.push(row[idAttribute]);
         });

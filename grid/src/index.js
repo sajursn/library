@@ -44,8 +44,6 @@ const Grid = (props) => {
 
     // Set state value for variable to check if the loading process is going on
     const [isNextPageLoading, setIsNextPageLoading] = useState(false);
-    // Local state for group sort options
-    const [groupSortOptions, setGroupSortOptions] = useState([]);
 
     // Logic for searching in each column
     const searchColumn = (column, original, searchText) => {
@@ -125,22 +123,21 @@ const Grid = (props) => {
         }
     };
 
-    // Extract/add and modify required data from user configured columns and expand columns
-    const processedColumns = extractColumns(
-        columns,
-        searchColumn,
-        isDesktop,
-        updateRowInGrid,
-        expandableColumn
-    );
-    const additionalColumn = extractAdditionalColumn(
-        columnToExpand,
-        isDesktop,
-        updateRowInGrid
+    // Local state value for holding columns configuration
+    const [gridColumns, setGridColumns] = useState(
+        extractColumns(
+            columns,
+            searchColumn,
+            isDesktop,
+            updateRowInGrid,
+            expandableColumn
+        )
     );
 
-    // Create columns variable, to be used by grid component
-    const gridColumns = processedColumns || [];
+    // Local state value for holding the additional column configuration
+    const [additionalColumn, setAdditionalColumn] = useState(
+        extractAdditionalColumn(columnToExpand, isDesktop, updateRowInGrid)
+    );
 
     // Add logic to calculate height of each row, based on the content of  or more columns
     // This can be used only if developer using the component has not passed a function to calculate row height
@@ -202,47 +199,52 @@ const Grid = (props) => {
         return returnValue;
     };
     // Function to return sorted data
-    const getSortedData = (originalData) => {
-        return originalData.sort((x, y) => {
-            let compareResult = 0;
-            groupSortOptions.forEach((option) => {
-                const { sortBy, sortOn, order } = option;
-                const newResult =
-                    sortOn === "value"
-                        ? compareValues(order, x[sortBy], y[sortBy])
-                        : compareValues(
-                              order,
-                              x[sortBy][sortOn],
-                              y[sortBy][sortOn]
-                          );
-                compareResult = compareResult || newResult;
+    const getSortedData = (originalData, groupSortOptions) => {
+        if (
+            originalData &&
+            originalData.length > 0 &&
+            groupSortOptions &&
+            groupSortOptions.length > 0
+        ) {
+            return originalData.sort((x, y) => {
+                let compareResult = 0;
+                groupSortOptions.forEach((option) => {
+                    const { sortBy, sortOn, order } = option;
+                    const newResult =
+                        sortOn === "value"
+                            ? compareValues(order, x[sortBy], y[sortBy])
+                            : compareValues(
+                                  order,
+                                  x[sortBy][sortOn],
+                                  y[sortBy][sortOn]
+                              );
+                    compareResult = compareResult || newResult;
+                });
+                return compareResult;
             });
-            return compareResult;
-        });
+        }
+        return originalData;
     };
     // #endregion
-
-    // Gets called when group sort is applied or cleared
-    const doGroupSort = (sortOptions) => {
-        setGroupSortOptions(sortOptions);
-    };
 
     // Gets called when page scroll reaches the bottom of the grid.
     // Trigger call back and get the grid data updated.
     const loadNextPage = () => {
-        const { lastPage, pageNum, pageSize, endCursor } = pageInfo;
-        if (!lastPage) {
-            setIsNextPageLoading(true);
-            if (paginationType === "index") {
-                loadMoreData({
-                    pageNum: pageNum + 1,
-                    pageSize
-                });
-            } else {
-                loadMoreData({
-                    endCursor,
-                    pageSize
-                });
+        if (pageInfo) {
+            const { lastPage, pageNum, pageSize, endCursor } = pageInfo;
+            if (!lastPage) {
+                setIsNextPageLoading(true);
+                if (paginationType === "cursor") {
+                    loadMoreData({
+                        endCursor,
+                        pageSize
+                    });
+                } else {
+                    loadMoreData({
+                        pageNum: pageNum + 1,
+                        pageSize
+                    });
+                }
             }
         }
     };
@@ -251,11 +253,25 @@ const Grid = (props) => {
         setIsNextPageLoading(false);
     }, [gridData, pageInfo]);
 
-    // Sort the data based on the user selected group sort optipons
-    const data =
-        gridData && gridData.length > 0 ? getSortedData([...gridData]) : [];
+    useEffect(() => {
+        setGridColumns(
+            extractColumns(
+                columns,
+                searchColumn,
+                isDesktop,
+                updateRowInGrid,
+                expandableColumn
+            )
+        );
+    }, [columns]);
 
-    if (!(data && data.length > 0)) {
+    useEffect(() => {
+        setAdditionalColumn(
+            extractAdditionalColumn(columnToExpand, isDesktop, updateRowInGrid)
+        );
+    }, [columnToExpand]);
+
+    if (!(gridData && gridData.length > 0)) {
         return (
             <div className={`grid-component-container ${className || ""}`}>
                 <h2 style={{ textAlign: "center", marginTop: "70px" }}>
@@ -264,7 +280,7 @@ const Grid = (props) => {
             </div>
         );
     }
-    if (!(processedColumns && processedColumns.length > 0)) {
+    if (!(gridColumns && gridColumns.length > 0)) {
         return (
             <div className={`grid-component-container ${className || ""}`}>
                 <h2 style={{ textAlign: "center", marginTop: "70px" }}>
@@ -273,17 +289,7 @@ const Grid = (props) => {
             </div>
         );
     }
-    if (!idAttribute) {
-        return (
-            <div className={`grid-component-container ${className || ""}`}>
-                <h2 style={{ textAlign: "center", marginTop: "70px" }}>
-                    <span className="error">Id Attribute not passed</span>
-                </h2>
-            </div>
-        );
-    }
 
-    const { total, lastPage } = pageInfo;
     return (
         <div className={`grid-component-container ${className || ""}`}>
             <Customgrid
@@ -292,9 +298,9 @@ const Grid = (props) => {
                 gridWidth={gridWidth}
                 managableColumns={gridColumns}
                 expandedRowData={additionalColumn}
-                data={data}
+                gridData={gridData}
                 idAttribute={idAttribute}
-                totalRecordsCount={total}
+                totalRecordsCount={pageInfo ? pageInfo.total : 0}
                 getRowEditOverlay={getRowEditOverlay}
                 updateRowInGrid={updateRowInGrid}
                 deleteRowFromGrid={deleteRowFromGrid}
@@ -309,10 +315,10 @@ const Grid = (props) => {
                 expandableColumn={expandableColumn}
                 rowActions={rowActions}
                 rowActionCallback={rowActionCallback}
-                hasNextPage={!lastPage}
+                hasNextPage={pageInfo ? !pageInfo.lastPage : false}
                 isNextPageLoading={isNextPageLoading}
                 loadNextPage={loadNextPage}
-                doGroupSort={doGroupSort}
+                getSortedData={getSortedData}
                 CustomPanel={CustomPanel}
                 globalSearch={globalSearch}
                 columnFilter={columnFilter}

@@ -12,16 +12,8 @@ export default function LeftDrawer(props) {
     const [leftDrawTemp, setLeftDrawTemp] = useState([]);
     const { filterData } = props;
     useEffect(() => {
-        const typeArray = [];
         setLeftDrawData(filterData.filter);
         setLeftDrawTemp(filterData.filter);
-        filterData.filter.forEach((item) => {
-            if (item.types) {
-                item.types.forEach((type) => {
-                    typeArray.push(type.name);
-                });
-            }
-        });
     }, [filterData.filter]);
 
     /**
@@ -34,25 +26,25 @@ export default function LeftDrawer(props) {
         if (leftDrawData) {
             filteredList = leftDrawTemp.filter((item) => {
                 return (
-                    item.name &&
-                    item.name.toLowerCase().includes(searchKey.toLowerCase())
+                    item.label &&
+                    item.label.toLowerCase().includes(searchKey.toLowerCase())
                 );
             });
         }
         setLeftDrawData(filteredList);
     };
     const filterList = leftDrawData.map((item, index) => {
-        if (item.isSubFilters) {
+        if (item.isSubFilter) {
             return (
-                <div key={`${item.name}+${index}`} className="accordion__list">
+                <div key={`${item.label}+${index}`} className="accordion__list">
                     <IAccordion className="accordion-no-border">
                         <IAccordionItem>
                             <IAccordionItemTitle>
-                                {item.name}
+                                {item.label}
                             </IAccordionItemTitle>
                             <IAccordionItemBody>
-                                {item.types &&
-                                    item.types.map((type) => {
+                                {item.subFilters &&
+                                    item.subFilters.map((type) => {
                                         return (
                                             <div
                                                 className="accordion__item"
@@ -61,26 +53,30 @@ export default function LeftDrawer(props) {
                                                     fontWeight: type.weight,
                                                     cursor: "pointer"
                                                 }}
-                                                data-testid={`${type.name}:${item.name}`}
+                                                data-testid={`${type.label}:${item.label}`}
                                                 onClick={() => {
-                                                    props.accordionFromLeftToRight(
-                                                        item.name,
-                                                        item.isSubFilters,
-                                                        type.name,
-                                                        type.dataType,
-                                                        type.condition,
-                                                        type.required,
-                                                        type.label,
-                                                        type.props
-                                                    );
-                                                    props.setInitialValueFilterGroup(
-                                                        type.label,
-                                                        type.dataType
-                                                    );
+                                                    if (type.isGroupFilter) {
+                                                        props.groupFiltersFromLeftToRight(
+                                                            type
+                                                        );
+                                                    } else {
+                                                        props.accordionFiltersFromLeftToRight(
+                                                            item.label,
+                                                            item.isSubFilter,
+                                                            type.label,
+                                                            type.dataType,
+                                                            type.condition,
+                                                            type.isRequired,
+                                                            type.name,
+                                                            type.initialValue,
+                                                            type.props,
+                                                            type.oneTimeCode
+                                                        );
+                                                    }
                                                 }}
-                                                key={`${type.name}:${item.name}`}
+                                                key={`${type.label}:${item.label}`}
                                             >
-                                                {type.name}
+                                                {type.label}
                                             </div>
                                         );
                                     })}
@@ -90,28 +86,33 @@ export default function LeftDrawer(props) {
                 </div>
             );
         }
-        if (!item.isSubFilters) {
+        if (!item.isSubFilter) {
             return (
-                <div className="fieldHeads" key={`${item.name},${index}`}>
+                <div className="fieldHeads" key={`${item.label},${index}`}>
                     <li
-                        key={`${item.name}_${index}`}
+                        key={`${item.label}_${index}`}
                         role="presentation"
                         style={{ fontWeight: item.weight }}
-                        data-testid={item.name}
+                        data-testid={item.label}
                         onClick={() => {
-                            props.fromLeftToRight(
-                                item.name,
-                                item.isSubFilters,
-                                item.dataType,
-                                item.condition,
-                                item.required,
-                                item.label,
-                                item.props
-                            );
-                            props.setInitialValueIndividualFields(item);
+                            if (item.isGroupFilter) {
+                                props.groupFiltersFromLeftToRight(item);
+                            } else {
+                                props.individualFiltersfromLeftToRight(
+                                    item.label,
+                                    item.isSubFilter,
+                                    item.dataType,
+                                    item.condition,
+                                    item.isRequired,
+                                    item.name,
+                                    item.initialValue,
+                                    item.props,
+                                    item.oneTimeCode
+                                );
+                            }
                         }}
                     >
-                        {item.name}
+                        {item.label}
                     </li>
                 </div>
             );
@@ -138,8 +139,7 @@ export default function LeftDrawer(props) {
 
 LeftDrawer.propTypes = {
     filterData: PropTypes.any,
-    fromLeftToRight: PropTypes.any,
-    accordionFromLeftToRight: PropTypes.any,
-    setInitialValueFilterGroup: PropTypes.any,
-    setInitialValueIndividualFields: PropTypes.any
+    individualFiltersfromLeftToRight: PropTypes.any,
+    accordionFiltersFromLeftToRight: PropTypes.any,
+    groupFiltersFromLeftToRight: PropTypes.any
 };

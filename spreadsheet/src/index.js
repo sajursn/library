@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { range } from "lodash";
 import ExtDataGrid from "./common/extDataGrid";
 import DatePicker from "./functions/datePicker";
+import CheckboxEditor from "./functions/checkboxEditor";
 import ErrorMessage from "./common/errorMessage";
 import ColumnReordering from "./overlays/column_chooser/chooser";
 import Sorting from "./overlays/sorting/sorting";
@@ -16,7 +17,6 @@ import {
     IconFilter
 } from "./utilities/svgUtilities";
 import FormulaProcessor from "./functions/formulaProcessor";
-
 // eslint-disable-next-line import/no-unresolved
 import "!style-loader!css-loader!sass-loader!./styles/main.scss";
 
@@ -92,6 +92,16 @@ let sortBy;
     };
 })();
 
+const checkboxFormatter = (val) => {
+    return (
+        <input
+            type="checkbox"
+            checked={val.value}
+            className="custom-checkbox"
+        />
+    );
+};
+
 class Spreadsheet extends Component {
     constructor(props) {
         super(props);
@@ -108,7 +118,9 @@ class Spreadsheet extends Component {
             isSelectAll,
             gridHeight,
             isTitle,
-            columnFilterStyle
+            columnFilterStyle,
+            isHeader,
+            noBorderClassName
         } = this.props;
         const dataSetVar = JSON.parse(JSON.stringify(dataSet));
         dataSetVar.forEach((e, index) => {
@@ -125,6 +137,8 @@ class Spreadsheet extends Component {
             isColumnChooser,
             isExportData,
             isSelectAll,
+            isHeader,
+            noBorderClassName,
             warningStatus: "",
             height: gridHeight,
             searchValue: "",
@@ -149,7 +163,6 @@ class Spreadsheet extends Component {
             columnKeyArray: [],
             operation: "",
             formulaKeyArray: [],
-            // pinnedReorder: false,
             columns: columns.map((item) => {
                 const colItem = item;
                 if (colItem.editor === "DatePicker") {
@@ -163,6 +176,9 @@ class Spreadsheet extends Component {
                     );
                 } else if (colItem.editor === "Text") {
                     colItem.editor = "text";
+                } else if (colItem.editor === "Checkbox") {
+                    colItem.editor = CheckboxEditor;
+                    colItem.formatter = checkboxFormatter;
                 } else {
                     colItem.editor = null;
                 }
@@ -459,16 +475,8 @@ class Spreadsheet extends Component {
             tempList.push(item.name);
         });
 
-        if (swapList.length > 0) {
-            for (let i = 0; i < tempList.length; i++) {
-                if (tempList[i] === swapList[i]) {
-                    // this.setState({ pinnedReorder: true });
-                }
-            }
-        }
         this.closeColumnReOrdering();
         swapList = [];
-        // this.setState({ pinnedReorder: false });
     };
 
     /**
@@ -1586,87 +1594,98 @@ class Spreadsheet extends Component {
             isGroupSort,
             isColumnChooser,
             isExportData,
-            isSelectAll
+            isSelectAll,
+            isHeader,
+            noBorderClassName
         } = this.state;
         return (
-            <div onScroll={this.handleScroll} className="iCargo__custom">
-                <div className="neo-grid-header">
-                    <div className="neo-grid-header__results">
-                        {isTitle !== false ? (
-                            <>
-                                Showing &nbsp;<strong> {count} </strong>
-                                &nbsp;records
-                            </>
-                        ) : null}
+            <div
+                onScroll={this.handleScroll}
+                className={`iCargo__custom ${noBorderClassName || ""}`}
+            >
+                {isHeader ? (
+                    <div className="neo-grid-header">
+                        <div className="neo-grid-header__results">
+                            {isTitle !== false ? (
+                                <>
+                                    Showing &nbsp;<strong> {count} </strong>
+                                    &nbsp;records
+                                </>
+                            ) : null}
+                        </div>
+                        <div className="neo-grid-header__utilities">
+                            {isGlobalSearch !== false ? (
+                                <div className="txt-wrap">
+                                    <input
+                                        data-testid="globalSearch"
+                                        type="text"
+                                        onChange={(e) => {
+                                            this.handleSearchValue(
+                                                e.target.value
+                                            );
+                                            const srchRows = this.getSearchRecords(
+                                                e
+                                            );
+                                            this.globalSearchLogic(e, srchRows);
+                                        }}
+                                        value={searchValue}
+                                        className="txt"
+                                        placeholder="Search"
+                                    />
+                                    <i>
+                                        <IconSearch />
+                                    </i>
+                                </div>
+                            ) : null}
+                            {isColumnFilter !== false ? (
+                                <div className={columnFilterStyle}>
+                                    <i>
+                                        <IconFilter />
+                                    </i>
+                                </div>
+                            ) : null}
+                            {isGroupSort !== false ? (
+                                <>
+                                    <div
+                                        role="presentation"
+                                        id="openSorting"
+                                        className="filterIcons"
+                                        onClick={this.sortingPanel}
+                                    >
+                                        <IconGroupSort />
+                                    </div>
+                                    {sortingPanelComponent}
+                                </>
+                            ) : null}
+                            {isColumnChooser !== false ? (
+                                <>
+                                    <div
+                                        role="presentation"
+                                        className="filterIcons"
+                                        onClick={this.columnReorderingPannel}
+                                    >
+                                        <IconColumns />
+                                    </div>
+                                    {columnReorderingComponent}
+                                </>
+                            ) : null}
+                            {isExportData !== false ? (
+                                <>
+                                    <div
+                                        role="presentation"
+                                        className="filterIcons"
+                                        onClick={this.exportColumnData}
+                                    >
+                                        <IconShare />
+                                    </div>
+                                    {exportComponent}
+                                </>
+                            ) : null}
+                        </div>
                     </div>
-                    <div className="neo-grid-header__utilities">
-                        {isGlobalSearch !== false ? (
-                            <div className="txt-wrap">
-                                <input
-                                    data-testid="globalSearch"
-                                    type="text"
-                                    onChange={(e) => {
-                                        this.handleSearchValue(e.target.value);
-                                        const srchRows = this.getSearchRecords(
-                                            e
-                                        );
-                                        this.globalSearchLogic(e, srchRows);
-                                    }}
-                                    value={searchValue}
-                                    className="txt"
-                                    placeholder="Search"
-                                />
-                                <i>
-                                    <IconSearch />
-                                </i>
-                            </div>
-                        ) : null}
-                        {isColumnFilter !== false ? (
-                            <div className={columnFilterStyle}>
-                                <i>
-                                    <IconFilter />
-                                </i>
-                            </div>
-                        ) : null}
-                        {isGroupSort !== false ? (
-                            <>
-                                <div
-                                    role="presentation"
-                                    id="openSorting"
-                                    className="filterIcons"
-                                    onClick={this.sortingPanel}
-                                >
-                                    <IconGroupSort />
-                                </div>
-                                {sortingPanelComponent}
-                            </>
-                        ) : null}
-                        {isColumnChooser !== false ? (
-                            <>
-                                <div
-                                    role="presentation"
-                                    className="filterIcons"
-                                    onClick={this.columnReorderingPannel}
-                                >
-                                    <IconColumns />
-                                </div>
-                                {columnReorderingComponent}
-                            </>
-                        ) : null}
-                        {isExportData !== false ? (
-                            <>
-                                <div
-                                    role="presentation"
-                                    className="filterIcons"
-                                    onClick={this.exportColumnData}
-                                >
-                                    <IconShare />
-                                </div>
-                                {exportComponent}
-                            </>
-                        ) : null}
-                    </div>
-                </div>
+                ) : (
+                    ""
+                )}
                 <ErrorMessage
                     className="errorDiv"
                     status={warningStatus}
@@ -1703,7 +1722,8 @@ class Spreadsheet extends Component {
                         onRowsDeselected: this.onRowsDeselected,
                         selectBy: {
                             indexes: selectedIndexes
-                        }
+                        },
+                        className: "custom-checkbox"
                     }}
                     onGridSort={(sortColumn, sortDirection) =>
                         this.sortRows(filteringRows, sortColumn, sortDirection)
@@ -1744,7 +1764,9 @@ Spreadsheet.propTypes = {
     isColumnChooser: PropTypes.bool,
     isExportData: PropTypes.bool,
     isSelectAll: PropTypes.bool,
-    gridHeight: PropTypes.number
+    gridHeight: PropTypes.number,
+    isHeader: PropTypes.bool,
+    noBorderClassName: PropTypes.string
 };
 
 export default Spreadsheet;

@@ -47,7 +47,7 @@ const ColumnReordering = (props) => {
     // isErrorDisplayed - to see if error message has to be displayed or not
     const [managedColumns, setManagedColumns] = useState([...columns]);
     const [managedAdditionalColumn, setManagedAdditionalColumn] = useState(
-        isAdditionalColumnPresent ? additionalColumn : null
+        isAdditionalColumnPresent ? { ...additionalColumn } : null
     );
     const [isErrorDisplayed, setIsErrorDisplayed] = useState(false);
 
@@ -237,6 +237,16 @@ const ColumnReordering = (props) => {
             setIsErrorDisplayed(true);
         }
     };
+
+    useEffect(() => {
+        setManagedColumns([...columns]);
+    }, [columns]);
+
+    useEffect(() => {
+        setManagedAdditionalColumn(
+            isAdditionalColumnPresent ? { ...additionalColumn } : null
+        );
+    }, [additionalColumn]);
 
     if (isManageColumnOverlayOpen) {
         const isAdditionalColumnSelected =

@@ -13,6 +13,10 @@
             "path": "./addPackages"
         },
         {
+            "name": "ITimePicker",
+            "path": "./addPackages"
+        },
+        {
             "name": "IFlightNumber",
             "path": "./addPackages"
         },
@@ -34,6 +38,18 @@
         },
         {
             "name": "ICommodities",
+            "path": "./addPackages"
+        },
+        {
+            "name": "CreateSelect",
+            "path": "./addPackages"
+        },
+        {
+            "name": "ISelect",
+            "path": "./addPackages"
+        },
+        {
+            "name": "IToggle",
             "path": "./addPackages"
         }
     ]

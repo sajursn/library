@@ -209,7 +209,20 @@ describe("render Index file ", () => {
         }
     ];
 
+    const pageInfo = {
+        pageNum: 1,
+        pageSize: 300,
+        total: 20000,
+        lastPage: true
+    };
+
     const smallData = [...data];
+    const smallPageInfo = {
+        pageNum: 1,
+        pageSize: 1,
+        total: 20000,
+        lastPage: false
+    };
 
     for (let i = 0; i < 50; i++) {
         data.push({
@@ -493,7 +506,8 @@ describe("render Index file ", () => {
                 gridWidth={mockGridWidth}
                 gridData={data}
                 idAttribute="travelId"
-                isNextPageAvailable={false}
+                paginationType="index"
+                pageInfo={pageInfo}
                 loadMoreData={mockLoadMoreData}
                 columns={gridColumns}
                 columnToExpand={mockAdditionalColumn}
@@ -593,7 +607,8 @@ describe("render Index file ", () => {
                 gridWidth={mockGridWidth}
                 gridData={data}
                 idAttribute="travelId"
-                isNextPageAvailable={false}
+                paginationType="index"
+                pageInfo={pageInfo}
                 loadMoreData={mockLoadMoreData}
                 columns={gridColumns}
                 columnToExpand={mockAdditionalColumn}
@@ -656,7 +671,8 @@ describe("render Index file ", () => {
                 gridWidth={mockGridWidth}
                 gridData={data}
                 idAttribute="travelId"
-                isNextPageAvailable={false}
+                paginationType="index"
+                pageInfo={pageInfo}
                 loadMoreData={mockLoadMoreData}
                 columns={gridColumns}
                 columnToExpand={mockAdditionalColumn}
@@ -778,7 +794,8 @@ describe("render Index file ", () => {
                 gridWidth={mockGridWidth}
                 gridData={smallData}
                 idAttribute="travelId"
-                isNextPageAvailable
+                paginationType="cursor"
+                pageInfo={smallPageInfo}
                 loadMoreData={mockLoadMoreData}
                 columns={gridColumns}
                 columnToExpand={mockAdditionalColumn}
@@ -805,7 +822,8 @@ describe("render Index file ", () => {
                 gridWidth={mockGridWidth}
                 gridData={data}
                 idAttribute="travelId"
-                isNextPageAvailable={false}
+                paginationType="index"
+                pageInfo={pageInfo}
                 loadMoreData={mockLoadMoreData}
                 columns={gridColumns}
                 columnToExpand={mockAdditionalColumnWithoutInnerCells}
@@ -875,7 +893,8 @@ describe("render Index file ", () => {
                 gridHeight={mockGridHeight}
                 gridWidth={mockGridWidth}
                 idAttribute="travelId"
-                isNextPageAvailable={false}
+                paginationType="index"
+                pageInfo={pageInfo}
                 loadMoreData={mockLoadMoreData}
                 columns={gridColumns}
                 columnToExpand={mockAdditionalColumn}
@@ -912,44 +931,9 @@ describe("render Index file ", () => {
                 gridWidth={mockGridWidth}
                 gridData={data}
                 idAttribute="travelId"
-                isNextPageAvailable={false}
+                paginationType="index"
+                pageInfo={pageInfo}
                 loadMoreData={mockLoadMoreData}
-                columnToExpand={mockAdditionalColumn}
-                rowActions={mockRowActions}
-                rowActionCallback={mockRowActionCallback}
-                getRowEditOverlay={mockGetRowEditOverlay}
-                onRowUpdate={mockUpdateRowData}
-                onRowDelete={mockDeleteRowData}
-                onRowSelect={mockSelectBulkData}
-                onGridRefresh={mockGridRefresh}
-                CustomPanel={mockCustomPanel}
-                globalSearch={false}
-                columnFilter={false}
-                groupSort={false}
-                columnChooser={false}
-                exportData={false}
-            />
-        );
-        const gridContainer = container;
-        expect(gridContainer).toBeInTheDocument();
-
-        // Check if error message is present
-        const errorElement = gridContainer.getElementsByClassName("error");
-        expect(errorElement.length).toBeGreaterThan(0);
-    });
-
-    it("test Grid loading without idAttribute", () => {
-        mockOffsetSize(600, 600);
-        const { container } = render(
-            <Grid
-                className="icargoCustomClass"
-                title={mockTitle}
-                gridHeight={mockGridHeight}
-                gridWidth={mockGridWidth}
-                gridData={data}
-                isNextPageAvailable={false}
-                loadMoreData={mockLoadMoreData}
-                columns={gridColumns}
                 columnToExpand={mockAdditionalColumn}
                 rowActions={mockRowActions}
                 rowActionCallback={mockRowActionCallback}
@@ -984,7 +968,8 @@ describe("render Index file ", () => {
                 gridWidth={mockGridWidth}
                 gridData={data}
                 idAttribute="travelId"
-                isNextPageAvailable={false}
+                paginationType="index"
+                pageInfo={pageInfo}
                 loadMoreData={mockLoadMoreData}
                 columns={gridColumns}
                 columnToExpand={mockAdditionalColumn}

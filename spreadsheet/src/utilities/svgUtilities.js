@@ -165,7 +165,7 @@ export const IconFilter = (): React$Element<*> => (
         style={{
             position: "absolute",
             right: "-14px",
-            top: "-14px",
+            top: "-5px",
             zIndex: "9"
         }}
     >

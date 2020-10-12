@@ -51,7 +51,7 @@ const Customgrid = (props) => {
         gridWidth,
         managableColumns,
         expandedRowData,
-        data,
+        gridData,
         idAttribute,
         totalRecordsCount,
         getRowEditOverlay,
@@ -66,7 +66,7 @@ const Customgrid = (props) => {
         hasNextPage,
         isNextPageLoading,
         loadNextPage,
-        doGroupSort,
+        getSortedData,
         CustomPanel,
         globalSearch,
         columnFilter,
@@ -83,20 +83,17 @@ const Customgrid = (props) => {
     const [isFirstRendering, setIsFirstRendering] = useState(true);
 
     // Local state value for holding columns configuration
-    const [columns, setColumns] = useState([...managableColumns]);
+    const [gridColumns, setGridColumns] = useState([...managableColumns]);
 
     // Local state value for holding the additional column configuration
     const [additionalColumn, setAdditionalColumn] = useState(expandedRowData);
 
-    // Variable to check if row options are available
-    const isRowActionsAvailable = rowActions && rowActions.length > 0;
-
     // Variables used for handling infinite loading
-    const itemCount = hasNextPage ? data.length + 1 : data.length;
+    const itemCount = hasNextPage ? gridData.length + 1 : gridData.length;
     const loadMoreItems = isNextPageLoading
         ? () => {}
         : loadNextPage || (() => {});
-    const isItemLoaded = (index) => !hasNextPage || index < data.length;
+    const isItemLoaded = (index) => !hasNextPage || index < gridData.length;
 
     // Local state value for checking if column filter is open/closed
     const [isFilterOpen, setFilterOpen] = useState(false);
@@ -137,13 +134,15 @@ const Customgrid = (props) => {
 
     // Local state value for checking if group Sort Overlay is open/closed.
     const [isGroupSortOverLayOpen, setGroupSortOverLay] = useState(false);
+    // Local state for group sort options
+    const [groupSortOptions, setGroupSortOptions] = useState([]);
     // Toggle group Sort state value based on UI clicks
     const toggleGroupSortOverLay = () => {
         setGroupSortOverLay(!isGroupSortOverLayOpen);
     };
     // Call apply group sort function from parent
     const applyGroupSort = (sortOptions) => {
-        doGroupSort(sortOptions);
+        setGroupSortOptions(sortOptions);
     };
 
     // Local state value for hiding/unhiding column management overlay
@@ -154,7 +153,7 @@ const Customgrid = (props) => {
     };
     // Callback method from column manage overlay to update the column structure of the grid
     const updateColumnStructure = (updatedColumns, updatedAdditionalColumn) => {
-        setColumns([...updatedColumns]);
+        setGridColumns([...updatedColumns]);
         setAdditionalColumn(updatedAdditionalColumn);
     };
 
@@ -206,14 +205,16 @@ const Customgrid = (props) => {
     // Finds the rows selected by users from selectedRowIds and updates the state value and triggers the callback function.
     // This is used in useeffects for row selection and row deselection
     const updateSelectedRows = (rows, selectedRowIds) => {
-        const rowsSelectedByUser = findSelectedRows(rows, selectedRowIds);
-        const rowIdentifiers = findSelectedRowIdAttributes(
-            rowsSelectedByUser,
-            idAttribute
-        );
-        setUserSelectedRowIdentifiers(rowIdentifiers);
-        if (onRowSelect) {
-            onRowSelect(rowsSelectedByUser);
+        if (idAttribute) {
+            const rowsSelectedByUser = findSelectedRows(rows, selectedRowIds);
+            const rowIdentifiers = findSelectedRowIdAttributes(
+                rowsSelectedByUser,
+                idAttribute
+            );
+            setUserSelectedRowIdentifiers(rowIdentifiers);
+            if (onRowSelect) {
+                onRowSelect(rowsSelectedByUser);
+            }
         }
     };
 
@@ -224,6 +225,9 @@ const Customgrid = (props) => {
         additionalColumn.Cell &&
         typeof additionalColumn.Cell === "function";
 
+    const columns = useMemo(() => gridColumns);
+    const data = useMemo(() => getSortedData([...gridData], groupSortOptions));
+
     // Initialize react-table instance with the values received through properties
     const {
         getTableProps,
@@ -233,12 +237,15 @@ const Customgrid = (props) => {
         prepareRow,
         preFilteredRows,
         state: { globalFilter, selectedRowIds },
-        setGlobalFilter
+        setGlobalFilter,
+        toggleRowSelected
     } = useTable(
         {
             columns,
             data,
             defaultColumn,
+            rowActions,
+            rowActionCallback,
             globalFilter: globalFilterLogic,
             autoResetFilters: false,
             autoResetGlobalFilter: false,
@@ -255,7 +262,7 @@ const Customgrid = (props) => {
         useResizeColumns,
         (hooks) => {
             // Add checkbox for all rows in grid, with different properties for header row and body rows
-            hooks.allColumns.push((hookColumns) => [
+            hooks.allColumns.push((hookColumns, hook) => [
                 {
                     id: "selection",
                     columnId: "column_custom_0",
@@ -293,19 +300,22 @@ const Customgrid = (props) => {
                     width: 35,
                     maxWidth: 35,
                     Cell: ({ row }) => {
+                        const { instance } = hook;
                         return (
                             <div className="action">
-                                {isRowActionsAvailable ? (
-                                    <RowOptions
-                                        row={row}
-                                        rowActions={rowActions}
-                                        rowActionCallback={rowActionCallback}
-                                        bindRowEditOverlay={bindRowEditOverlay}
-                                        bindRowDeleteOverlay={
-                                            bindRowDeleteOverlay
-                                        }
-                                    />
-                                ) : null}
+                                <RowOptions
+                                    row={row}
+                                    rowActions={
+                                        instance ? instance.rowActions : []
+                                    }
+                                    rowActionCallback={
+                                        instance
+                                            ? instance.rowActionCallback
+                                            : null
+                                    }
+                                    bindRowEditOverlay={bindRowEditOverlay}
+                                    bindRowDeleteOverlay={bindRowDeleteOverlay}
+                                />
                                 {isRowExpandEnabled || expandableColumn ? (
                                     <span
                                         className="expander"
@@ -338,11 +348,15 @@ const Customgrid = (props) => {
         }
     });
 
-    // Update the column chooser overlay, when user is updating column configuration from outside Grid
+    // Update state, when user is updating columns configuration from outside Grid
     useEffect(() => {
-        setColumns(managableColumns);
+        setGridColumns(managableColumns);
+    }, [managableColumns]);
+
+    // Update state, when user is updating additional column configuration from outside Grid
+    useEffect(() => {
         setAdditionalColumn(expandedRowData);
-    }, [managableColumns, expandedRowData]);
+    }, [expandedRowData]);
 
     // Update the boolean value used to identify if this is the first time render of Grid
     useEffect(() => {
@@ -352,7 +366,7 @@ const Customgrid = (props) => {
     // Update the select state of row in Grid using thehook provided by useTable method
     // Find the row Id using the key - value passed from props and use toggleRowSelected method
     useEffect(() => {
-        if (rowsToDeselect && rowsToDeselect.length) {
+        if (rowsToDeselect && rowsToDeselect.length && idAttribute) {
             rowsToDeselect.forEach((rowId) => {
                 const rowToDeselect = preFilteredRows.find((row) => {
                     const { original } = row;
@@ -360,7 +374,7 @@ const Customgrid = (props) => {
                 });
                 if (rowToDeselect) {
                     const { id } = rowToDeselect;
-                    selectedRowIds[id] = false;
+                    toggleRowSelected(id, false);
                     updateSelectedRows(preFilteredRows, selectedRowIds);
                 }
             });
@@ -380,15 +394,13 @@ const Customgrid = (props) => {
     // Set all row selections to false and find new Ids of already selected rows and make them selected
     useEffect(() => {
         if (!isFirstRendering) {
-            // Deselect all current selections
-            Object.keys(selectedRowIds).forEach((key) => {
-                selectedRowIds[key] = false;
-            });
             // Make rows selected if user has already made any selections
             if (
                 userSelectedRowIdentifiers &&
-                userSelectedRowIdentifiers.length > 0
+                userSelectedRowIdentifiers.length > 0 &&
+                idAttribute
             ) {
+                const updatedSelectedRowIds = [];
                 // Loop through already selected rows and find row id and make it selected
                 userSelectedRowIdentifiers.forEach((selectedRowId) => {
                     const updatedRow = preFilteredRows.find((row) => {
@@ -398,13 +410,23 @@ const Customgrid = (props) => {
                     if (updatedRow) {
                         const { id } = updatedRow;
                         if (updatedRow) {
-                            selectedRowIds[id] = true;
+                            toggleRowSelected(id, true);
+                            updatedSelectedRowIds.push(id);
+                        }
+                    }
+                });
+                // Loop through already selected rows and find row id that are not selected yet and update it to false
+                Object.entries(selectedRowIds).forEach((objEntry) => {
+                    if (objEntry && objEntry.length > 0) {
+                        const rowId = objEntry[0];
+                        if (!updatedSelectedRowIds.includes(rowId)) {
+                            toggleRowSelected(rowId, false);
                         }
                     }
                 });
             }
         }
-    }, [data]);
+    }, [gridData, groupSortOptions]);
 
     // Render each row and cells in each row, using attributes from react window list.
     const RenderRow = useCallback(
@@ -451,7 +473,8 @@ const Customgrid = (props) => {
             <div className="neo-grid-header">
                 <div className="neo-grid-header__results">
                     <strong>
-                        {rows.length === data.length
+                        {totalRecordsCount > 0 &&
+                        rows.length === gridData.length
                             ? totalRecordsCount
                             : rows.length}
                     </strong>
@@ -522,8 +545,8 @@ const Customgrid = (props) => {
                                 toggleManageColumnsOverlay={
                                     toggleManageColumnsOverlay
                                 }
-                                columns={columns}
-                                additionalColumn={additionalColumn}
+                                columns={managableColumns}
+                                additionalColumn={expandedRowData}
                                 updateColumnStructure={updateColumnStructure}
                             />
                         </div>
@@ -546,7 +569,7 @@ const Customgrid = (props) => {
                                     toggleExportDataOverlay
                                 }
                                 rows={rows}
-                                columns={columns}
+                                columns={gridColumns}
                                 additionalColumn={additionalColumn}
                             />
                         </div>
@@ -573,7 +596,7 @@ const Customgrid = (props) => {
                     <div className="overlay">
                         <RowEditOverlay
                             row={editedRowData}
-                            columns={columns}
+                            columns={gridColumns}
                             additionalColumn={additionalColumn}
                             getRowEditOverlay={getRowEditOverlay}
                             closeRowEditOverlay={closeRowEditOverlay}
@@ -614,7 +637,13 @@ const Customgrid = (props) => {
                                         className="tr"
                                     >
                                         {headerGroup.headers.map((column) => {
-                                            if (column.display === true) {
+                                            if (
+                                                !(
+                                                    column.isGroupHeader ===
+                                                        false &&
+                                                    column.display === false
+                                                )
+                                            ) {
                                                 return (
                                                     <div
                                                         {...column.getHeaderProps()}
@@ -650,7 +679,11 @@ const Customgrid = (props) => {
                                                                     : ""
                                                             }`}
                                                         >
-                                                            {!column.disableFilters
+                                                            {/* column.canFilter - should be used to identify if column is filterable */}
+                                                            {/* But bug of react-table will set canFilter to true (even if it is false) after doing a global search */}
+                                                            {/* Hence checking if filter logic is present as a function for a column */}
+                                                            {typeof column.filter ===
+                                                            "function"
                                                                 ? column.render(
                                                                       "Filter"
                                                                   )
@@ -718,7 +751,7 @@ Customgrid.propTypes = {
     gridHeight: PropTypes.string,
     gridWidth: PropTypes.string,
     managableColumns: PropTypes.arrayOf(PropTypes.object),
-    data: PropTypes.arrayOf(PropTypes.object),
+    gridData: PropTypes.arrayOf(PropTypes.object),
     idAttribute: PropTypes.string,
     totalRecordsCount: PropTypes.number,
     getRowEditOverlay: PropTypes.func,
@@ -732,7 +765,7 @@ Customgrid.propTypes = {
     hasNextPage: PropTypes.bool,
     isNextPageLoading: PropTypes.bool,
     loadNextPage: PropTypes.func,
-    doGroupSort: PropTypes.func,
+    getSortedData: PropTypes.func,
     getToggleAllRowsSelectedProps: PropTypes.func,
     row: PropTypes.arrayOf(PropTypes.object),
     expandedRowData: PropTypes.object,

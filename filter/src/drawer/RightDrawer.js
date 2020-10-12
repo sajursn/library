@@ -7,8 +7,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import FilterForm from "../component/filterForm";
 
 const RightDrawer = (props) => {
-    const { values, handleSubmit } = props;
-    const { setFieldValue } = useFormikContext();
+    const { handleSubmit } = props;
+    const { values, setFieldValue } = useFormikContext();
     const [applyFilterWarning, setApplyFilterWarning] = useState("");
     const [
         applyfilterWarningClassName,
@@ -16,6 +16,7 @@ const RightDrawer = (props) => {
     ] = useState("");
     const [recentFilterShow, setRecentFilterShow] = useState("none");
     const [filterShow, setFilterShow] = useState("");
+    const [showSavePopup, setShowSavePopup] = useState("none");
     const {
         emptyFilterWarning,
         emptyFilterClassName,
@@ -27,7 +28,14 @@ const RightDrawer = (props) => {
         conditionHandler,
         applyValidator,
         resetDrawer,
-        applyFilter
+        groupFilterCloseField,
+        groupFilterConditionHandler,
+        listViewClick,
+        listView,
+        listViewName,
+        savedFilters,
+        savedFilterName,
+        savedFilterClick
     } = props;
     useEffect(() => {
         setApplyFilterWarning(emptyFilterWarning);
@@ -35,10 +43,85 @@ const RightDrawer = (props) => {
     }, [emptyFilterWarning, emptyFilterClassName]);
 
     useEffect(() => {
+        if (listViewClick) {
+            listView.predefinedFilters.forEach((list) => {
+                if (list.name === listViewName) {
+                    Object.entries(list.filters).forEach(
+                        ([filterKeys, filterValues]) => {
+                            setFieldValue(filterKeys, filterValues);
+                            if (
+                                list.filters[filterKeys].constructor ===
+                                    Object &&
+                                list.filters[filterKeys].condition
+                            ) {
+                                filters.forEach((filterItem) => {
+                                    if (
+                                        `${filterKeys}.value` ===
+                                        filterItem.name
+                                    ) {
+                                        setFieldValue(
+                                            `${filterItem.labelName},check`,
+                                            true
+                                        );
+                                    }
+                                });
+                            }
+                        }
+                    );
+                }
+            });
+        }
+    }, [listViewClick]);
+
+    useEffect(() => {
+        if (savedFilterClick) {
+            savedFilters.savedFilters.forEach((list) => {
+                if (list.name === savedFilterName) {
+                    Object.entries(list.filters).forEach(
+                        ([filterKeys, filterValues]) => {
+                            setFieldValue(filterKeys, filterValues);
+                            if (
+                                list.filters[filterKeys].constructor ===
+                                    Object &&
+                                list.filters[filterKeys].condition
+                            ) {
+                                filters.forEach((filterItem) => {
+                                    if (
+                                        `${filterKeys}.value` ===
+                                        filterItem.name
+                                    ) {
+                                        setFieldValue(
+                                            `${filterItem.labelName},check`,
+                                            true
+                                        );
+                                    }
+                                });
+                            }
+                        }
+                    );
+                }
+            });
+        }
+    }, [savedFilterClick]);
+
+    useEffect(() => {
         setRecentFilterShow(recentFilterShowProp);
         setFilterShow(filterShowProp);
     }, [recentFilterShowProp, filterShowProp]);
 
+    /**
+     * Method To open the save filter element from rightDrawer
+     */
+    const openSavePopup = () => {
+        setShowSavePopup("");
+    };
+
+    /**
+     * Method To close the save filter element from rightDrawer
+     */
+    const closeSavePopUp = () => {
+        setShowSavePopup("none");
+    };
     return (
         <div>
             <form onSubmit={handleSubmit}>
@@ -67,12 +150,18 @@ const RightDrawer = (props) => {
                             filters={filters}
                             closeField={closeField}
                             conditionHandler={conditionHandler}
+                            groupFilterCloseField={groupFilterCloseField}
+                            groupFilterConditionHandler={
+                                groupFilterConditionHandler
+                            }
                         />
                         <div className="filter__warning">
                             <span
                                 id="fieldWarning"
                                 className="text-danger"
-                                style={{ display: applyValidator }}
+                                style={{
+                                    display: applyValidator
+                                }}
                             >
                                 No filter selected!
                             </span>
@@ -80,7 +169,11 @@ const RightDrawer = (props) => {
                     </div>
                     <div className="filter__btn">
                         <div className="filter__save">
-                            <IButton type="button" className="button-save">
+                            <IButton
+                                type="button"
+                                className="button-save"
+                                onClick={openSavePopup}
+                            >
                                 <SaveLogo />
                                 <span>SAVE</span>
                             </IButton>
@@ -94,7 +187,7 @@ const RightDrawer = (props) => {
                                 data-testid="resetClick"
                                 className="reset"
                                 onClick={() => {
-                                    resetDrawer(setFieldValue);
+                                    resetDrawer(values, setFieldValue);
                                 }}
                             >
                                 Reset
@@ -104,12 +197,48 @@ const RightDrawer = (props) => {
                                 type="submit"
                                 className="applyFilter"
                                 data-testid="applyFilter-button"
-                                onClick={() => {
-                                    applyFilter(values);
-                                }}
                             >
                                 Apply Filter
                             </IButton>
+                        </div>
+                        <div
+                            style={{
+                                display: showSavePopup
+                            }}
+                            className="popup--save"
+                        >
+                            <h5>Save the Filter</h5>
+                            <label htmlFor="saveFilterName">
+                                Save Filter Name
+                                <input
+                                    id="saveFilterName"
+                                    className="txt"
+                                    data-testid="registersaveFilterName-input"
+                                    onChange={() => {}}
+                                />
+                            </label>
+                            <div className="btn-wrap">
+                                <button
+                                    type="button"
+                                    className="button"
+                                    data-testid="cancelSavePopup-button"
+                                    onClick={() => {
+                                        closeSavePopUp();
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    className="button"
+                                    data-testid="saveFilter-button"
+                                    onClick={() => {
+                                        closeSavePopUp();
+                                    }}
+                                >
+                                    Save
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -125,18 +254,27 @@ RightDrawer.propTypes = {
     filterShowProp: PropTypes.any,
     filterCount: PropTypes.any,
     resetDrawer: PropTypes.any,
-    applyFilter: PropTypes.any,
     filters: PropTypes.any,
     closeField: PropTypes.any,
     conditionHandler: PropTypes.any,
-    values: PropTypes.any,
     handleSubmit: PropTypes.any,
-    applyValidator: PropTypes.any
+    applyValidator: PropTypes.any,
+    groupFilterCloseField: PropTypes.any,
+    groupFilterConditionHandler: PropTypes.any,
+    listViewClick: PropTypes.any,
+    listView: PropTypes.any,
+    listViewName: PropTypes.any,
+    savedFilters: PropTypes.any,
+    savedFilterName: PropTypes.any,
+    savedFilterClick: PropTypes.any
 };
 
 export default withFormik({
     displayName: "BasicForm",
     mapPropsToValues: (props) => props.initialValuesObject,
     validateOnBlur: false,
-    validateOnChange: false
+    validateOnChange: false,
+    handleSubmit: (values, { props }) => {
+        props.applyFilter(values);
+    }
 })(RightDrawer);

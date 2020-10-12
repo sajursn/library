@@ -99,7 +99,7 @@ describe("render Customgrid", () => {
         display: true
     };
 
-    const data = [
+    const gridData = [
         {
             travelId: 0,
             flight: {
@@ -219,7 +219,7 @@ describe("render Customgrid", () => {
     ];
 
     for (let i = 0; i < 50; i++) {
-        data.push({
+        gridData.push({
             travelId: i,
             flight: {
                 flightno: "XX6983",
@@ -427,7 +427,7 @@ describe("render Customgrid", () => {
     const mockHasNextPage = false;
     const mockIsNextPageLoading = false;
     const mockLoadNextPage = jest.fn();
-    const mockDoGroupSort = jest.fn();
+    const mockGetSortedData = jest.fn(() => gridData);
 
     let mockContainer;
     beforeEach(() => {
@@ -445,7 +445,7 @@ describe("render Customgrid", () => {
                 gridWidth={mockGridWidth}
                 managableColumns={gridColumns}
                 expandedRowData={mockAdditionalColumn}
-                data={data}
+                gridData={gridData}
                 idAttribute="travelId"
                 getRowEditOverlay={mockGetRowEditOverlay}
                 updateRowInGrid={mockUpdateRowInGrid}
@@ -460,7 +460,7 @@ describe("render Customgrid", () => {
                 hasNextPage={mockHasNextPage}
                 isNextPageLoading={mockIsNextPageLoading}
                 loadNextPage={mockLoadNextPage}
-                doGroupSort={mockDoGroupSort}
+                getSortedData={mockGetSortedData}
             />
         );
         // Column Filter Search
@@ -638,7 +638,7 @@ describe("render Customgrid", () => {
                 gridWidth={mockGridWidth}
                 managableColumns={gridColumns}
                 expandedRowData={mockAdditionalColumn}
-                data={data}
+                gridData={gridData}
                 idAttribute="travelId"
                 getRowEditOverlay={mockGetRowEditOverlay}
                 updateRowInGrid={mockUpdateRowInGrid}
@@ -653,7 +653,7 @@ describe("render Customgrid", () => {
                 hasNextPage={mockHasNextPage}
                 isNextPageLoading={mockIsNextPageLoading}
                 loadNextPage={mockLoadNextPage}
-                doGroupSort={mockDoGroupSort}
+                getSortedData={mockGetSortedData}
             />
         );
 

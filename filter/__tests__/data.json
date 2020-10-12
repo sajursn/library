@@ -1,8 +1,79 @@
 {
     "filter": [
         {
-            "name": "Booking Profile",
-            "isSubFilters": false,
+            "label": "Date Range",
+            "isSubFilter": false,
+            "isGroupFilter": true,
+            "condition": [
+                { "label": "equal to", "value": "equal to" },
+                {
+                    "label": "greater than",
+                    "value": "greater than"
+                },
+                {
+                    "label": "less than",
+                    "value": "less than"
+                }
+            ],
+            "groupFilter": [
+                {
+                    "label": "From Date",
+                    "dataType": "IDatePicker",
+                    "isRequired": true,
+                    "name": "fromDate"
+                },
+                {
+                    "label": "To Date",
+                    "dataType": "IDatePicker",
+                    "isRequired": true,
+                    "name": "toDate"
+                }
+            ]
+        },
+        {
+            "label": "Custom Fields",
+            "isSubFilter": false,
+            "isGroupFilter": true,
+            "groupFilter": [
+                {
+                    "label": "Date Picker",
+                    "dataType": "IDatePicker",
+                    "isRequired": true,
+                    "name": "datePicker"
+                },
+                {
+                    "label": "Airport Field",
+                    "dataType": "IAirport",
+                    "isRequired": true,
+                    "name": "airportField"
+                },
+                {
+                    "label": "Text Field",
+                    "dataType": "ITextField",
+                    "isRequired": true,
+                    "name": "textField"
+                },
+                {
+                    "label": "AWB Field",
+                    "dataType": "IAwbNumber",
+                    "isRequired": true,
+                    "name": "awbField"
+                }
+            ]
+        },
+        {
+            "label": "Date",
+            "isSubFilter": false,
+            "isGroupFilter": false,
+            "dataType": "IDatePicker",
+            "isRequired": true,
+            "name": "Date",
+            "initialValue": ""
+        },
+        {
+            "label": "Booking Profile",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -15,24 +86,44 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "bookingProfile",
-            "props": { "name": "bookingProfile.value" }
+            "isRequired": true,
+            "name": "bookingProfile",
+            "initialValue": ""
         },
         {
-            "name": "Departure Port",
-            "isSubFilters": true,
-            "types": [
+            "label": "Toggle Field",
+            "isSubFilter": false,
+            "isGroupFilter": false,
+            "condition": [
+                { "label": "equal to", "value": "equal to" },
                 {
-                    "name": "Airport",
+                    "label": "greater than",
+                    "value": "greater than"
+                },
+                {
+                    "label": "less than",
+                    "value": "less than"
+                }
+            ],
+            "dataType": "IToggle",
+            "isRequired": true,
+            "name": "itoggle"
+        },
+        {
+            "label": "Departure Port",
+            "isSubFilter": true,
+            "subFilters": [
+                {
+                    "label": "Airport",
+                    "isGroupFilter": false,
                     "dataType": "IAirport",
-                    "condition": [],
-                    "required": true,
-                    "label": "departurePortAirport",
-                    "props": { "name": "departurePortAirport.value" }
+                    "isRequired": true,
+                    "name": "airport",
+                    "initialValue": ""
                 },
                 {
-                    "name": "Airport Group",
+                    "label": "Airport Group",
+                    "isGroupFilter": false,
                     "dataType": "ITextField",
                     "condition": [
                         { "label": "equal to", "value": "equal to" },
@@ -45,14 +136,13 @@
                             "value": "less than"
                         }
                     ],
-                    "required": true,
-                    "label": "departurePortAirportGroup",
-                    "props": {
-                        "name": "departurePortAirportGroup.value"
-                    }
+
+                    "name": "airportGroup",
+                    "initialValue": ""
                 },
                 {
-                    "name": "City",
+                    "label": "City",
+                    "isGroupFilter": false,
                     "dataType": "ITextField",
                     "condition": [
                         { "label": "equal to", "value": "equal to" },
@@ -65,12 +155,32 @@
                             "value": "less than"
                         }
                     ],
-                    "required": true,
-                    "label": "departurePortCity",
-                    "props": { "name": "departurePortCity.value" }
+                    "isRequired": true,
+                    "name": "city",
+                    "initialValue": ""
                 },
                 {
-                    "name": "City Group",
+                    "label": "City Group",
+                    "dataType": "ITextField",
+                    "isGroupFilter": false,
+                    "condition": [
+                        { "label": "equal to", "value": "equal to" },
+                        {
+                            "label": "greater than",
+                            "value": "greater than"
+                        },
+                        {
+                            "label": "less than",
+                            "value": "less than"
+                        }
+                    ],
+                    "isRequired": true,
+                    "name": "cityGroup",
+                    "initialValue": ""
+                },
+                {
+                    "label": "Country",
+                    "isGroupFilter": false,
                     "dataType": "ITextField",
                     "condition": [
                         { "label": "equal to", "value": "equal to" },
@@ -83,46 +193,43 @@
                             "value": "less than"
                         }
                     ],
-                    "required": true,
-                    "label": "departurePortCityGroup",
-                    "props": {
-                        "name": "departurePortCityGroup.value"
-                    }
+                    "isRequired": true,
+                    "name": "country",
+                    "initialValue": ""
                 },
                 {
-                    "name": "Country",
-                    "dataType": "ITextField",
-                    "condition": [
-                        { "label": "equal to", "value": "equal to" },
+                    "label": "Date Range Port",
+                    "isGroupFilter": true,
+                    "groupFilter": [
                         {
-                            "label": "greater than",
-                            "value": "greater than"
+                            "label": "From Date Port",
+                            "dataType": "IDatePicker",
+                            "isRequired": true,
+                            "name": "fromDatePort"
                         },
                         {
-                            "label": "less than",
-                            "value": "less than"
+                            "label": "To Date Port",
+                            "dataType": "IDatePicker",
+                            "isRequired": true,
+                            "name": "toDatePort"
                         }
-                    ],
-                    "required": true,
-                    "label": "departurePortCountry",
-                    "props": { "name": "departurePortCountry.value" }
+                    ]
                 }
             ]
         },
         {
-            "name": "Arrival Port",
-            "isSubFilters": true,
-            "types": [
+            "label": "Arrival Terminal",
+            "isSubFilter": true,
+            "subFilters": [
                 {
-                    "name": "Airport",
-                    "condition": [],
+                    "label": "Terminal",
                     "dataType": "IAirport",
-                    "required": true,
-                    "label": "arrivalPortAirport",
-                    "props": { "name": "arrivalPortAirport.value" }
+                    "isRequired": true,
+                    "name": "terminal",
+                    "initialValue": ""
                 },
                 {
-                    "name": "Airport Group",
+                    "label": "Terminal Group",
                     "dataType": "ITextField",
                     "condition": [
                         { "label": "equal to", "value": "equal to" },
@@ -135,12 +242,12 @@
                             "value": "less than"
                         }
                     ],
-                    "required": true,
-                    "label": "arrivalPortAirportGroup",
-                    "props": { "name": "arrivalPortAirportGroup.value" }
+                    "isRequired": true,
+                    "name": "terminalGroup",
+                    "initialValue": ""
                 },
                 {
-                    "name": "City",
+                    "label": "Cluster",
                     "dataType": "ITextField",
                     "condition": [
                         { "label": "equal to", "value": "equal to" },
@@ -153,14 +260,12 @@
                             "value": "less than"
                         }
                     ],
-                    "required": true,
-                    "label": "arrivalPortAirportGroup",
-                    "props": {
-                        "name": "arrivalPortCity.value"
-                    }
+                    "isRequired": true,
+                    "name": "cluster",
+                    "initialValue": ""
                 },
                 {
-                    "name": "City Group",
+                    "label": "Cluster Group",
                     "dataType": "ITextField",
                     "condition": [
                         { "label": "equal to", "value": "equal to" },
@@ -173,12 +278,12 @@
                             "value": "less than"
                         }
                     ],
-                    "required": true,
-                    "label": "arrivalPortCityGroup",
-                    "props": { "name": "arrivalPortCityGroup.value" }
+                    "isRequired": true,
+                    "name": "clusterGroup",
+                    "initialValue": ""
                 },
                 {
-                    "name": "Country",
+                    "label": "state",
                     "dataType": "ITextField",
                     "condition": [
                         { "label": "equal to", "value": "equal to" },
@@ -191,25 +296,57 @@
                             "value": "less than"
                         }
                     ],
-                    "required": true,
-                    "label": "arrivalPortCountry",
-                    "props": { "name": "arrivalPortCountry.value" }
+                    "isRequired": true,
+                    "name": "state",
+                    "initialValue": ""
+                },
+                {
+                    "label": "Create Select Terminal",
+                    "isGroupFilter": false,
+                    "dataType": "CreateSelect",
+                    "condition": [
+                        { "label": "equal to", "value": "equal to" },
+                        {
+                            "label": "greater than",
+                            "value": "greater than"
+                        },
+                        {
+                            "label": "less than",
+                            "value": "less than"
+                        }
+                    ],
+                    "isRequired": true,
+                    "name": "createSelectTerminal",
+                    "initialValue": "",
+                    "oneTimeCode": "options1"
+                },
+                {
+                    "label": "ISelect Terminal",
+                    "isGroupFilter": false,
+                    "dataType": "ISelect",
+                    "condition": [
+                        { "label": "equal to", "value": "equal to" },
+                        {
+                            "label": "greater than",
+                            "value": "greater than"
+                        },
+                        {
+                            "label": "less than",
+                            "value": "less than"
+                        }
+                    ],
+                    "isRequired": true,
+                    "name": "iSelectTerminal",
+                    "initialValue": "",
+                    "oneTimeCode": "options2"
                 }
             ]
-        },
-        {
-            "name": "Date",
-            "isSubFilters": false,
-            "condition": [],
-            "dataType": "IDatePicker",
-            "required": true,
-            "label": "Date",
-            "props": { "name": "Date.value" }
         },
 
         {
-            "name": "Flight Group",
-            "isSubFilters": false,
+            "label": "Flight Group",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -222,13 +359,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "flightGroup",
-            "props": { "name": "flightGroup.value" }
+            "isRequired": true,
+            "name": "flightGroup",
+            "initialValue": ""
         },
         {
-            "name": "Flight No",
-            "isSubFilters": false,
+            "label": "Flight No",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "IFlightNumber",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -241,13 +379,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "flightNo",
-            "props": { "name": "flightNo.value" }
+            "isRequired": true,
+            "name": "flightNo",
+            "initialValue": ""
         },
         {
-            "name": "Yeild",
-            "isSubFilters": false,
+            "label": "Yeild",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -260,13 +399,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "yield",
-            "props": { "name": "yield.value" }
+            "isRequired": true,
+            "name": "yield",
+            "initialValue": ""
         },
         {
-            "name": "Service Recovery",
-            "isSubFilters": false,
+            "label": "Service Recovery",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -280,12 +420,13 @@
                 }
             ],
             "required": false,
-            "label": "serviceRecovery",
-            "props": { "name": "serviceRecovery.value" }
+            "name": "serviceRecovery",
+            "initialValue": ""
         },
         {
-            "name": "Queued Bookings",
-            "isSubFilters": false,
+            "label": "Queued Bookings",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -298,13 +439,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "queuedBookings",
-            "props": { "name": "queuedBookings.value" }
+            "isRequired": true,
+            "name": "queuedBookings",
+            "initialValue": ""
         },
         {
-            "name": "Weight",
-            "isSubFilters": false,
+            "label": "Weight",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -317,12 +459,12 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "weight",
-            "props": { "name": "weight.value" }
+            "isRequired": true,
+            "name": "weight",
+            "initialValue": ""
         },
         {
-            "name": "Volume",
+            "label": "Volume",
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -335,13 +477,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "volume",
-            "props": { "name": "volume.value" }
+            "isRequired": true,
+            "name": "volume",
+            "initialValue": ""
         },
         {
-            "name": "Aircraft",
-            "isSubFilters": false,
+            "label": "Aircraft",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -354,13 +497,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "aircraft",
-            "props": { "name": "aircraft.value" }
+            "isRequired": true,
+            "name": "aircraft",
+            "initialValue": ""
         },
         {
-            "name": "Aircraft Classification",
-            "isSubFilters": false,
+            "label": "Aircraft Classification",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -373,13 +517,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "aircraftClassification",
-            "props": { "name": "aircraftClassification.value" }
+            "isRequired": true,
+            "name": "aircraftClassification",
+            "initialValue": ""
         },
         {
-            "name": "Flight Type",
-            "isSubFilters": false,
+            "label": "Flight Type",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -392,13 +537,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "flightType",
-            "props": { "name": "flightType.value" }
+            "isRequired": true,
+            "name": "flightType",
+            "initialValue": ""
         },
         {
-            "name": "Flight Status",
-            "isSubFilters": false,
+            "label": "Flight Status",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -411,13 +557,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "flightStatus",
-            "props": { "name": "flightStatus.value" }
+            "isRequired": true,
+            "name": "flightStatus",
+            "initialValue": ""
         },
         {
-            "name": "Segment Status",
-            "isSubFilters": false,
+            "label": "Segment Status",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ITextField",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -430,13 +577,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "segmentStatus",
-            "props": { "name": "segmentStatus.value" }
+            "isRequired": true,
+            "name": "segmentStatus",
+            "initialValue": ""
         },
         {
-            "name": "AWB Number",
-            "isSubFilters": false,
+            "label": "AWB Number",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "IAwbNumber",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -449,13 +597,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "awbNumber",
-            "props": { "name": "awbNumber.value" }
+            "isRequired": true,
+            "name": "awbNumber",
+            "initialValue": ""
         },
         {
-            "name": "Products",
-            "isSubFilters": false,
+            "label": "Products",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "IProducts",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -468,13 +617,56 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "products",
-            "props": { "name": "products.value" }
+            "isRequired": true,
+            "name": "products",
+            "initialValue": ""
         },
         {
-            "name": "Commodities",
-            "isSubFilters": false,
+            "label": "Create Select",
+            "isSubFilter": false,
+            "isGroupFilter": false,
+            "dataType": "CreateSelect",
+            "condition": [
+                { "label": "equal to", "value": "equal to" },
+                {
+                    "label": "greater than",
+                    "value": "greater than"
+                },
+                {
+                    "label": "less than",
+                    "value": "less than"
+                }
+            ],
+            "isRequired": true,
+            "name": "createSelect",
+            "initialValue": "",
+            "oneTimeCode": "options1"
+        },
+        {
+            "label": "I Select",
+            "isSubFilter": false,
+            "isGroupFilter": false,
+            "dataType": "ISelect",
+            "condition": [
+                { "label": "equal to", "value": "equal to" },
+                {
+                    "label": "greater than",
+                    "value": "greater than"
+                },
+                {
+                    "label": "less than",
+                    "value": "less than"
+                }
+            ],
+            "isRequired": true,
+            "name": "iSelect",
+            "initialValue": "",
+            "oneTimeCode": "options2"
+        },
+        {
+            "label": "Commodities",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "ICommodities",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -487,13 +679,14 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "commodities",
-            "props": { "name": "commodities.value" }
+            "isRequired": true,
+            "name": "commodities",
+            "initialValue": ""
         },
         {
-            "name": "Master Select",
-            "isSubFilters": false,
+            "label": "Master Select",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "MasterSelect",
             "condition": [
                 { "label": "equal to", "value": "equal to" },
@@ -506,10 +699,10 @@
                     "value": "less than"
                 }
             ],
-            "required": true,
-            "label": "masterSelect",
+            "isRequired": true,
+            "name": "masterSelect",
+            "initialValue": "",
             "props": {
-                "name": "masterSelect.value",
                 "query": "commodities",
                 "value": "commodityCode",
                 "label": "commodityDescription",
@@ -517,8 +710,9 @@
             }
         },
         {
-            "name": "Master Type Select",
-            "isSubFilters": false,
+            "label": "Master Type Select",
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "MasterTypeSelect",
             "condition": [
                 { "label": "equal to", " value": "equal to" },
@@ -531,8 +725,8 @@
                     "value": "less than"
                 }
             ],
+            "initialValue": "",
             "props": {
-                "name": "masterTypeSelect",
                 "selectOptions": [
                     {
                         "label": "Airport",
@@ -564,8 +758,8 @@
                 ],
                 "initialType": "airports"
             },
-            "required": true,
-            "label": "masterTypeSelect"
+            "isRequired": true,
+            "name": "masterTypeSelect"
         }
     ]
 }

@@ -5,7 +5,12 @@ import CellDisplayAndEditTag from "./CellDisplayAndEditTag";
 import { CellDisplayAndEditContext } from "../Utilities/TagsContext";
 import { IconPencil, IconTick, IconCancel } from "../Utilities/SvgUtilities";
 
-const CellDisplayAndEdit = ({ row, updateRowInGrid, expandableColumn }) => {
+const CellDisplayAndEdit = ({
+    row,
+    updateRowInGrid,
+    expandableColumn,
+    isDesktop
+}) => {
     const { column, columns } = row;
     if (column && row.row) {
         const { original, isExpanded } = row.row;
@@ -39,13 +44,16 @@ const CellDisplayAndEdit = ({ row, updateRowInGrid, expandableColumn }) => {
         const cellDisplayContent = column.displayCell(
             originalRowValue,
             CellDisplayAndEditTag,
+            isDesktop,
             expandableColumn ? isExpanded : null
         );
         const cellEditContent = column.editCell
             ? column.editCell(
                   originalRowValue,
                   CellDisplayAndEditTag,
-                  getUpdatedRowValue
+                  getUpdatedRowValue,
+                  isDesktop,
+                  expandableColumn ? isExpanded : null
               )
             : null;
         const columnsToPass = columns;

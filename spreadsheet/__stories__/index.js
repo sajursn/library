@@ -1,7 +1,9 @@
+/* eslint-disable import/no-unresolved */
 import React, { useState, useEffect } from "react";
 
 import Spreadsheet from "../src/index";
 import CargoData from "./data.json";
+import "./example.css";
 
 const GridComponent = (props) => {
     const {
@@ -13,7 +15,9 @@ const GridComponent = (props) => {
         isGroupSort,
         isColumnChooser,
         isExportData,
-        isSelectAll
+        isSelectAll,
+        isHeader,
+        noBorderClassName
     } = props;
     const rows = CargoData;
     const pageSize = 500;
@@ -34,6 +38,28 @@ const GridComponent = (props) => {
             width: 150,
             filterType: "autoCompleteFilter",
             dataSource: []
+        },
+        {
+            key: "tiltable",
+            name: "Tiltable",
+            draggable: false,
+            editor: "Checkbox",
+            formulaApplicable: false,
+            sortable: true,
+            resizable: true,
+            filterable: true,
+            width: 150
+        },
+        {
+            key: "stackable",
+            name: "Stackable",
+            draggable: false,
+            editor: "Checkbox",
+            formulaApplicable: false,
+            sortable: true,
+            resizable: true,
+            filterable: true,
+            width: 150
         },
         {
             key: "date",
@@ -521,13 +547,13 @@ const GridComponent = (props) => {
 
     columns.forEach((item) => {
         if (item.key === "segmentto") {
-            let tempArray = [];
+            const tempArray = [];
             segmenToCode.forEach((it) => {
                 tempArray.push({ id: it, value: it });
             });
             item.dataSource = tempArray;
         } else if (item.key === "segmentfrom") {
-            let tempArray = [];
+            const tempArray = [];
             segmentFromCode.forEach((it) => {
                 tempArray.push({ id: it, value: it });
             });
@@ -536,7 +562,7 @@ const GridComponent = (props) => {
     });
 
     useEffect(() => {
-        //Make API call to fetch initial set of data, uncomment below code to use API call
+        // Make API call to fetch initial set of data, uncomment below code to use API call
         // fetchData(0).then((data) => {
         //   setItems(data);
         // });
@@ -548,7 +574,7 @@ const GridComponent = (props) => {
      * @param {*} rows is the updated row values
      */
     const updatedRows = ({ fromRow, toRow, updated }) => {
-        let tempData = [...data];
+        const tempData = [...data];
         const temp = tempData.slice();
         for (let i = fromRow; i <= toRow; i++) {
             temp[i] = {
@@ -585,6 +611,8 @@ const GridComponent = (props) => {
                 isColumnChooser={isColumnChooser}
                 isExportData={isExportData}
                 isSelectAll={isSelectAll}
+                isHeader={isHeader}
+                noBorderClassName={noBorderClassName}
             />
         );
     }

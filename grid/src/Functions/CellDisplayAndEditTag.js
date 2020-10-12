@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import { CellDisplayAndEditContext } from "../Utilities/TagsContext";
-import { checkInnerCells } from "../Utilities/TagUtilities";
+import { findSelectedColumn, checkInnerCells } from "../Utilities/TagUtilities";
 
 const CellDisplayAndEditTag = (props) => {
     const contextVallues = useContext(CellDisplayAndEditContext);
@@ -9,9 +9,7 @@ const CellDisplayAndEditTag = (props) => {
     const { cellKey, columnKey } = props;
 
     if (columns && columnKey) {
-        const selectedColumn = columns.find(
-            (col) => col.id === columnKey && col.display === true
-        );
+        const selectedColumn = findSelectedColumn(columns, columnKey);
         if (checkInnerCells(selectedColumn, cellKey)) {
             return (
                 <React.Fragment key="CellDisplayAndEditFragment">

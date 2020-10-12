@@ -15,7 +15,7 @@ import GridComponent from "./index.js";
 
 ## Business component for showing list of data in Spreadsheet
 
-`Spreadsheet` component consists of list of data.
+`Spreadsheet` component consists of list of data. Inline edit of cell will be enabled by double clicking the cell's.
 
 ### Props
 
@@ -58,8 +58,8 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
         isColumnChooser={false}
         isExportData={false}
         isSelectAll={false}
+        isHeader={true}
     />
-    ;
 </Story>
 
 ```jsx
@@ -80,6 +80,7 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
     isColumnChooser={isColumnChooser}
     isExportData={isExportData}
     isSelectAll={isSelectAll}
+    isHeader={isHeader}
 />
 ```
 
@@ -88,7 +89,7 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
 <Story name="With custom height">
     <GridComponent
         isTitle={false}
-        gridHeight={1000}
+        gridHeight={500}
         isGlobalSearch={false}
         isColumnFilter={false}
         isGroupSort={false}
@@ -96,7 +97,6 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
         isExportData={false}
         isSelectAll={false}
     />
-    ;
 </Story>
 
 ```jsx
@@ -132,8 +132,8 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
         isColumnChooser={false}
         isExportData={false}
         isSelectAll={false}
+        isHeader={true}
     />
-    ;
 </Story>
 
 ```jsx
@@ -154,6 +154,7 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
     isColumnChooser={isColumnChooser}
     isExportData={isExportData}
     isSelectAll={isSelectAll}
+    isHeader={isHeader}
 />
 ```
 
@@ -169,8 +170,8 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
         isColumnChooser={false}
         isExportData={false}
         isSelectAll={false}
+        isHeader={true}
     />
-    ;
 </Story>
 
 ```jsx
@@ -192,6 +193,7 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
     isColumnChooser={isColumnChooser}
     isExportData={isExportData}
     isSelectAll={isSelectAll}
+    isHeader={isHeader}
 />
 ```
 
@@ -206,8 +208,8 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
         isColumnChooser={false}
         isExportData={false}
         isSelectAll={false}
+        isHeader={true}
     />
-    ;
 </Story>
 
 ```jsx
@@ -228,6 +230,7 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
     isColumnChooser={isColumnChooser}
     isExportData={isExportData}
     isSelectAll={isSelectAll}
+    isHeader={isHeader}
 />
 ```
 
@@ -242,8 +245,8 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
         isColumnChooser={true}
         isExportData={false}
         isSelectAll={false}
+        isHeader={true}
     />
-    ;
 </Story>
 
 ```jsx
@@ -264,6 +267,7 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
     isColumnChooser={isColumnChooser}
     isExportData={isExportData}
     isSelectAll={isSelectAll}
+    isHeader={isHeader}
 />
 ```
 
@@ -278,8 +282,8 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
         isColumnChooser={false}
         isExportData={true}
         isSelectAll={false}
+        isHeader={true}
     />
-    ;
 </Story>
 
 ```jsx
@@ -300,6 +304,7 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
     isColumnChooser={isColumnChooser}
     isExportData={isExportData}
     isSelectAll={isSelectAll}
+    isHeader={isHeader}
 />
 ```
 
@@ -315,7 +320,6 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
         isExportData={false}
         isSelectAll={true}
     />
-    ;
 </Story>
 
 ```jsx
@@ -336,6 +340,82 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
     isColumnChooser={isColumnChooser}
     isExportData={isExportData}
     isSelectAll={isSelectAll}
+/>
+```
+
+#### Without header
+
+<Story name="Without header">
+    <GridComponent
+        isTitle={false}
+        isGlobalSearch={false}
+        isColumnFilter={false}
+        isGroupSort={false}
+        isColumnChooser={false}
+        isExportData={false}
+        isSelectAll={false}
+        isHeader={false}
+    />
+</Story>
+
+```jsx
+<Spreadsheet
+    rows={data.slice(0, pageSize)}
+    dataSet={data}
+    pageSize={pageSize}
+    count={pageSize}
+    columns={columns}
+    updateCellData={updateCellData}
+    selectBulkData={selectBulkData}
+    maxLeftPinnedColumn={maxLeftPinnedColumn}
+    updatedRows={updatedRows}
+    isTitle={isTitle}
+    isGlobalSearch={isGlobalSearch}
+    isColumnFilter={isColumnFilter}
+    isGroupSort={isGroupSort}
+    isColumnChooser={isColumnChooser}
+    isExportData={isExportData}
+    isSelectAll={isSelectAll}
+    isHeader={isHeader}
+/>
+```
+
+#### With classname
+
+<Story name="With classname">
+    <GridComponent
+        isTitle={false}
+        isGlobalSearch={false}
+        isColumnFilter={false}
+        isGroupSort={false}
+        isColumnChooser={false}
+        isExportData={false}
+        isSelectAll={false}
+        isHeader={false}
+        noBorderClassName={"grid-no-border"}
+    />
+</Story>
+
+```jsx
+<Spreadsheet
+    rows={data.slice(0, pageSize)}
+    dataSet={data}
+    pageSize={pageSize}
+    count={pageSize}
+    columns={columns}
+    updateCellData={updateCellData}
+    selectBulkData={selectBulkData}
+    maxLeftPinnedColumn={maxLeftPinnedColumn}
+    updatedRows={updatedRows}
+    isTitle={isTitle}
+    isGlobalSearch={isGlobalSearch}
+    isColumnFilter={isColumnFilter}
+    isGroupSort={isGroupSort}
+    isColumnChooser={isColumnChooser}
+    isExportData={isExportData}
+    isSelectAll={isSelectAll}
+    isHeader={isHeader}
+    noBorderClassName={noBorderClassName}
 />
 ```
 
@@ -353,8 +433,9 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
         isColumnChooser={true}
         isExportData={true}
         isSelectAll={true}
+        isHeader={true}
+        noBorderClassName={"grid-no-border"}
     />
-    ;
 </Story>
 
 ```jsx
@@ -377,5 +458,7 @@ import { Spreadsheet } from "@neo-ui/spreadsheet";
     isColumnChooser={isColumnChooser}
     isExportData={isExportData}
     isSelectAll={isSelectAll}
+    isHeader={isHeader}
+    noBorderClassName={noBorderClassName}
 />
 ```

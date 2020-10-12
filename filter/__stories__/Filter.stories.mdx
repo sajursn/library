@@ -1,4 +1,3 @@
-
 import { Meta, Story, Props, Preview } from "@storybook/addon-docs/blocks";
 import { withKnobs, text, array, object } from "@storybook/addon-knobs";
 import { MockedProvider } from "@apollo/react-testing";
@@ -11,6 +10,9 @@ import "bootstrap/dist/css/bootstrap.css";
 import "./variables.css";
 import "./example.css";
 import customPanel from "./panels/customPanel";
+import listView from "./listView.json";
+import savedFilters from "./saveFilter.json";
+import oneTimeValues from "./oneTimeValues.json";
 
 export const appliedFilters = (appliedFilter) => {
     alert(`AppliedFilters:${JSON.stringify(appliedFilter)}`);
@@ -20,9 +22,11 @@ export const appliedFilters = (appliedFilter) => {
 
 # Filter
 
-`Filter` component is a collection of filter types. Filter type controls are using iCargo components which are dynamically binded from a config file.
+`Filter` component is a collection of filter types. Filter type controls are using iCargo components which are dynamically binded from a JSON file(refer sample JSON snippet mentioned below ).
 
 Values of fields are connected to `formik state`.
+
+#### Default
 
 <Story name="default">
     <MockedProvider addTypename={false} mocks={mockData}>
@@ -30,16 +34,12 @@ Values of fields are connected to `formik state`.
             <Filter
                 filterDataProp={FilterData}
                 appliedFiltersProp={appliedFilters}
-                CustomPanel={customPanel}
+                listView={listView}
+                savedFilters={savedFilters}
             />
         </Form>
     </MockedProvider>
 </Story>
-
-
-### Props
-
-<Props of={Filter} />
 
 ### Code
 
@@ -49,11 +49,76 @@ import Filter from "@neo-ui/filter";
 <Filter
     filterDataProp={FilterData}
     appliedFiltersProp={appliedFilters}
+    listView={listView}
+    savedFilters={savedFilters}
+/>;
+```
+
+#### With CustomPanel
+
+<Story name="withCustomPanel">
+    <MockedProvider addTypename={false} mocks={mockData}>
+        <Form>
+            <Filter
+                filterDataProp={FilterData}
+                appliedFiltersProp={appliedFilters}
+                listView={listView}
+                savedFilters={savedFilters}
+                CustomPanel={customPanel}
+            />
+        </Form>
+    </MockedProvider>
+</Story>
+
+### Code
+
+```jsx
+import Filter from "@neo-ui/filter";
+
+<Filter
+    filterDataProp={FilterData}
+    appliedFiltersProp={appliedFilters}
+    listView={listView}
+    savedFilters={savedFilters}
     CustomPanel={customPanel}
 />;
 ```
 
-### Props Overview
+#### With oneTimeCode
+
+<Story name="withOneTimeCode">
+    <MockedProvider addTypename={false} mocks={mockData}>
+        <Form>
+            <Filter
+                filterDataProp={FilterData}
+                appliedFiltersProp={appliedFilters}
+                listView={listView}
+                savedFilters={savedFilters}
+                oneTimeValues={oneTimeValues}
+            />
+        </Form>
+    </MockedProvider>
+</Story>
+
+### Code
+
+```jsx
+import Filter from "@neo-ui/filter";
+
+<Filter
+    filterDataProp={FilterData}
+    appliedFiltersProp={appliedFilters}
+    listView={listView}
+    savedFilters={savedFilters}
+    oneTimeValues={oneTimeValues}
+/>;
+```
+
+### Props
+
+<Props of={Filter} />
+
+### Usage of Props
 
 "filterDataProp" - this props accepts filter json data
 
@@ -61,27 +126,83 @@ import Filter from "@neo-ui/filter";
 
 "CustomPanel" - this props accepts the header customPanel data.
 
-### Sample data
+"listView" - this prop accepts the listView JSON data.
 
-Below mentioned is the json structure which is used to bind filter options.
+"savedFilters" - this prop accepts the saved filter JSON data.
+
+"oneTimeValues"-collection of master data used to bind options for CreateSelect and Iselect components
+
+### List of iCargo business components imported in filter component
+
+IAirport
+
+IDatePicker
+
+ITextField
+
+IFlightNumber
+
+IProducts
+
+MasterTypeSelect
+
+IAwbNumber
+
+MasterSelect
+
+ICommodities
+
+ITimePicker
+
+CreateSelect
+
+ISelect
+
+IButton
+
+IAccordion
+
+IToggle
+
+ITimePicker
+
+### Sample oneTimeValues snippet
+
+```jsx
+{
+"options1": [
+{ "label": "One", "value": "1" },
+{ "label": "Two", "value": "2" },
+{ "label": "Three", "value": "3" },
+{ "label": "Four", "value": "4" }
+],
+"options2": [
+{ "label": "One", "value": "1" },
+{ "label": "Two", "value": "2" }
+]
+}
+```
+
+### Sample JSON snippet
+
+Below mentioned is the json structure which is used to bind filter options with accordion.
 
 ```jsx
 {
     "filter": [
         {
-            "name": "Departure Port",
-            "isSubFilters": true,
-            "types": [
+            "label": "Departure Port",
+            "isSubFilter": true,
+            "isGroupFilter": false,
+            "subFilters": [
                 {
-                    "name": "Airport",
+                    "label": "Airport",
                     "dataType": "IAirport",
-                    "condition": [],
-                    "required": true,
-                    "label": "dptAirport",
-                    "props": { "name": "dptAirport.value" }
+                    "isRequired": true,
+                    "name": "dptAirport",
                 },
                 {
-                    "name": "Airport Group",
+                    "label": "Airport Group",
                     "dataType": "ITextField",
                     "condition": [
                         { "label": "equal to", " value": "equal to" },
@@ -94,20 +215,28 @@ Below mentioned is the json structure which is used to bind filter options.
                             "value": "less than"
                         }
                     ],
-                    "required": true,
-                    "label": "dptAirportGroup",
-                    "props": { "name": "dptAirportGroup.value" }
+                    "isRequired": true,
+                    "name": "dptAirportGroup",
                 }
             ]
         },
         {
             "name": "Date",
-            "isSubFilters": false,
-            "condition": [],
+            "isSubFilter": false,
+            "isGroupFilter": false,
             "dataType": "IDatePicker",
-            "required": true,
-            "label": "Date",
-            "props": { "name": "Date.value" }
+            "isRequired": true,
+            "label": "Date"
+        },
+        {
+            "label": "Create Select",
+            "isSubFilter": false,
+            "isGroupFilter": false,
+            "dataType": "CreateSelect",
+            "isRequired": true,
+            "name": "createSelect",
+            "initialValue": "",
+            "oneTimeCode": "options1"
         }
     ]
 }
@@ -118,24 +247,184 @@ Below mentioned is the json structure which is used to bind filter options.
 
 "name" - this property is used to identify a control
 
-"isSubFilters" - this property is used to identify whether a filter is having sub filters.
+"isSubFilter" - this property is used to identify whether a filter is having sub filters.
+
+"isGroupFilter" - this property is used to identify whether group filter is enabled.
 
 "condition" - this array is used to show the conditional dropdownlist, if the array is empty toggle control will be hidden else will show the options added.
 
 "dataType" - this property accepts the iCargo component name(eg:- ITextField/IAirport).
 
-"required" - this property accepts boolean value which enables the control required/not.
+"isRequired" - this property accepts boolean value which enables the control required/not.
 
-"label" - this property accepts label name for the field.
+"label" - this property accepts label name which is displayed in form.
 
 "props" - this property accepts prop values for the field.
 
+"initialValue" - this property accepts initial value for controls(For eg: Current value sets current date),
+
+"oneTimeCode" - this property refers to the key name of one of the oneTime key values of masterData from oneTimeValues
+
+### Group Filter
+
+##### Sample data
+
+Below mentioned is the json structure which is used to bind group filter options with accordion.
+
+###### groupfilter without accordion
+
+```jsx
+{
+    "label": "Custom Fields",
+    "isSubFilter": false,
+    "isGroupFilter": true,
+    "groupFilter": [
+        {
+            "label": "Date Picker",
+            "dataType": "IDatePicker",
+            "isRequired": true,
+            "name": "datePicker"
+        },
+        {
+            "label": "Airport Field",
+            "dataType": "IAirport",
+            "isRequired": true,
+            "name": "airportField"
+        },
+        {
+            "label": "Text Field",
+            "dataType": "ITextField",
+            "isRequired": true,
+            "name": "textField"
+        },
+        {
+            "label": "AWB Field",
+            "dataType": "IAwbNumber",
+            "isRequired": true,
+            "name": "awbField"
+        }
+    ]
+},
+{
+    "label": "Date",
+    "isSubFilter": false,
+    "isGroupFilter": false,
+    "dataType": "IDatePicker",
+    "isRequired": true,
+    "name": "Date",
+    "initialValue": ""
+}
+
+```
+
+###### groupfilter with accordion
+
+```jsx
+{
+    "label": "Departure Port",
+    "isSubFilter": true,
+    "subFilters": [
+        {
+            "label": "Airport",
+            "dataType": "IAirport",
+            "isRequired": true,
+            "isGroupFilter": false,
+            "name": "airport",
+            "initialValue": ""
+        },
+        {
+            "label": "Date Range Port",
+            "isGroupFilter": true,
+            "groupFilter": [
+                {
+                    "label": "From Date Port",
+                    "dataType": "IDatePicker",
+                    "isRequired": true,
+                    "name": "fromDatePort"
+                },
+                {
+                    "label": "To Date Port",
+                    "dataType": "IDatePicker",
+                    "isRequired": true,
+                    "name": "toDatePort"
+                }
+            ]
+        }
+    ]
+}
+
+```
+
+### List View
+
+##### Sample data
+
+Below mentioned is the json structure which is used to bind List view.
+
+```jsx
+{
+    "predefinedFilters": [
+        {
+            "name": "All Flights",
+            "category": "AF",
+            "default": false,
+            "filters": {
+                "yield": "rerwe",
+                "flightNo": {
+                    "carriercategory": "dfd",
+                    "flightNumber": "00123",
+                    "flightDate": "2020-09-22"
+                },
+                "bookingProfile": {
+                    "value": "test",
+                    "condition": "greater than"
+                },
+                "masterSelect": {
+                    "value": ["LTF", "LOB"],
+                    "condition": "greater than"
+                }
+            }
+        }
+    ]
+}
+```
+
+### Saved Filter
+
+##### Sample data
+
+Below mentioned is the json structure which is used to bind Saved Filter.
+
+```jsx
+{
+    "savedFilters": [
+        {
+            "name": "Flights under 2500 kg capacity",
+            "default": false,
+            "category": "FlightCapacity",
+            "filters": {
+                "yield": "rerwe",
+                "flightNo": {
+                    "carrierCode": "dfd",
+                    "flightNumber": "00123",
+                    "flightDate": "2020-09-22"
+                },
+                "bookingProfile": {
+                    "value": "test",
+                    "condition": "greater than"
+                }
+            }
+        }
+    ]
+}
+```
 
 ### Apply Filter callback method
 
 Apply filter feature will return a call back method which includes the control name & value. Below will be `formik` structure.
 
 ##### Example
+
 ```jsx
 AppliedFilters:{"bookingProfile":{"condition":"equal to","value":"Booked"}}
 ```

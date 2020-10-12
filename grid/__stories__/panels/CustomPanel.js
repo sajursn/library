@@ -25,7 +25,7 @@ const CustomPanel = () => {
             children: []
         },
         {
-            label: "Segment Summary",
+            label: "Segment Summary Options",
             value: "SegmentSummary",
             children: [
                 {
@@ -41,7 +41,7 @@ const CustomPanel = () => {
             ]
         },
         {
-            label: "Feedback",
+            label: "Feedback Options",
             value: "Feedback",
             children: [
                 {

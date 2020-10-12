@@ -1,15 +1,30 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { IButton } from "@neo/button";
+import OutsideClickHandler from "react-outside-click-handler";
 import { IconLeftAlign } from "../utilities/svgUtilities";
+import LeftPopUpPanel from "./leftpopUpPanel";
 
 let chips;
 let chipCount;
 const MainFilterPanel = (props) => {
-    const [listFilter, setListFilter] = useState(false);
     const [chipArray, setChipArray] = useState({});
     const [countShow, setCountShow] = useState("none");
-    const { applyFilterChip, showDrawer, CustomPanel } = props;
+    const {
+        applyFilterChip,
+        showDrawer,
+        CustomPanel,
+        listView,
+        handlelistViewClick,
+        leftPopUpShow,
+        openLeftPopUp,
+        closeLeftPopUp,
+        savedFilters,
+        handleSavedFilterClick,
+        listViewName,
+        savedFilterName
+    } = props;
+
     useEffect(() => {
         setChipArray(applyFilterChip);
         if (Object.keys(applyFilterChip).length > 0) {
@@ -19,48 +34,112 @@ const MainFilterPanel = (props) => {
         }
     }, [applyFilterChip]);
 
-    /**
-     * Method to display and not display saved filters list
-     */
-    const handleListFilter = () => {
-        setListFilter(!listFilter);
-    };
-
     if (chipArray) {
         chipCount = 0;
-
         chips = Object.entries(chipArray).map(([key, values]) => {
             if (
-                values.value &&
-                (values.value.length > 0 ||
-                    Object.keys(values.value).length > 0)
+                !values.condition &&
+                (((typeof values === "string" || Array.isArray(values)) &&
+                    values.length > 0) ||
+                    (values &&
+                        values.constructor === Object &&
+                        Object.keys(values).length > 0) ||
+                    (typeof values === "boolean" && !key.includes(",check")))
             ) {
                 chipCount += 1;
                 return (
                     <div
                         role="presentation"
                         className="listContent"
-                        data-testid={`${values.value},${key}`}
-                        key={`${values.value},${key}`}
+                        data-testid={key}
+                        key={key}
                         onClick={() => {
                             props.showDrawer();
                         }}
                     >
                         <span key={key}>{key}</span>
-                        {values.condition && values.condition.length > 0 && (
+                        {(typeof values === "string" ||
+                            typeof values === "boolean") && (
+                            <div key={values}>
+                                &nbsp;&nbsp;
+                                {values.toString()}
+                                &nbsp;&nbsp;
+                            </div>
+                        )}
+                        {Array.isArray(values) &&
+                            values.map((item) => {
+                                return (
+                                    <div key={item}>
+                                        &nbsp;&nbsp;
+                                        {item}
+                                        &nbsp;&nbsp;
+                                    </div>
+                                );
+                            })}
+                        {values &&
+                            values.constructor === Object &&
+                            Object.entries(values).map(([keys, item]) => {
+                                return (
+                                    <div key={keys}>
+                                        &nbsp;&nbsp;
+                                        {keys}:{item}
+                                        &nbsp;&nbsp;
+                                    </div>
+                                );
+                            })}
+                    </div>
+                );
+            }
+            if (
+                (values.condition &&
+                    values.condition.length > 0 &&
+                    (typeof values.value === "string" ||
+                        Array.isArray(values.value)) &&
+                    values.value.length > 0) ||
+                (typeof values.value === "object" &&
+                    !Array.isArray(values.value) &&
+                    Object.keys(values.value).length > 0) ||
+                (typeof values.value === "boolean" && !key.includes(",check"))
+            ) {
+                if (
+                    values.condition &&
+                    values.condition.length &&
+                    (((typeof values.value === "string" ||
+                        Array.isArray(values.value)) &&
+                        values.value.length > 0) ||
+                        (typeof values.value === "object" &&
+                            !Array.isArray(values.value) &&
+                            Object.keys(values.value).length > 0) ||
+                        (typeof values.value === "boolean" &&
+                            !key.includes(",check")))
+                ) {
+                    chipCount += 1;
+                }
+
+                return (
+                    <div
+                        role="presentation"
+                        className="listContent"
+                        data-testid={key}
+                        key={key}
+                        onClick={() => {
+                            props.showDrawer();
+                        }}
+                    >
+                        <span key={key}>{key}</span>
+                        {values.condition && (
                             <div key={values.condition}>
                                 {values.condition}
                                 &nbsp;&nbsp;
                             </div>
                         )}
-                        {values.value &&
-                            values.value.length > 0 &&
-                            !Array.isArray(values.value) && (
-                                <div key={values.value}>{values.value}</div>
-                            )}
-                        {values.value &&
-                            values.value.length > 0 &&
-                            Array.isArray(values.value) &&
+                        {(typeof values.value === "string" ||
+                            typeof values.value === "boolean") && (
+                            <div key={values.value}>
+                                {values.value.toString()}
+                            </div>
+                        )}
+                        {Array.isArray(values.value) &&
                             values.value.map((item) => {
                                 return (
                                     <div key={item}>
@@ -70,9 +149,8 @@ const MainFilterPanel = (props) => {
                                     </div>
                                 );
                             })}
-                        {values.value &&
-                            Object.keys(values.value).length > 0 &&
-                            !values.value.length > 0 &&
+                        {typeof values.value === "object" &&
+                            !Array.isArray(values.value) &&
                             Object.keys(values.value).map((item) => {
                                 return (
                                     <div key={item}>
@@ -88,7 +166,6 @@ const MainFilterPanel = (props) => {
             return <div />;
         });
     }
-
     return (
         <div className="neo-header">
             <div className="header__filter">
@@ -101,15 +178,36 @@ const MainFilterPanel = (props) => {
                             role="presentation"
                             className="iconLeft"
                             data-testid="handleListFilterCheck"
-                            onClick={handleListFilter}
+                            onClick={openLeftPopUp}
                         >
                             <IconLeftAlign />
+                            <OutsideClickHandler
+                                onOutsideClick={closeLeftPopUp}
+                            >
+                                <LeftPopUpPanel
+                                    leftPopUpShow={leftPopUpShow}
+                                    listView={listView}
+                                    handlelistViewClick={handlelistViewClick}
+                                    savedFilters={savedFilters}
+                                    handleSavedFilterClick={
+                                        handleSavedFilterClick
+                                    }
+                                    listViewName={listViewName}
+                                    savedFilterName={savedFilterName}
+                                />
+                            </OutsideClickHandler>
                         </div>
-                        <div className="leftSpace">All flights</div>
+                        <div className="leftSpace">
+                            {listViewName && listViewName.length > 0
+                                ? listViewName
+                                : savedFilterName}
+                        </div>
                     </div>
-                    <div className="header__custompanel">
-                        <CustomPanel />
-                    </div>
+                    {CustomPanel && (
+                        <div className="header__custompanel">
+                            <CustomPanel />
+                        </div>
+                    )}
                 </div>
                 <div className="secondList">
                     <div className="displayFlex">
@@ -154,7 +252,16 @@ const MainFilterPanel = (props) => {
 MainFilterPanel.propTypes = {
     applyFilterChip: PropTypes.any,
     showDrawer: PropTypes.any,
-    CustomPanel: PropTypes.any
+    CustomPanel: PropTypes.any,
+    listView: PropTypes.any,
+    savedFilters: PropTypes.any,
+    handlelistViewClick: PropTypes.any,
+    leftPopUpShow: PropTypes.any,
+    openLeftPopUp: PropTypes.any,
+    closeLeftPopUp: PropTypes.any,
+    handleSavedFilterClick: PropTypes.any,
+    listViewName: PropTypes.any,
+    savedFilterName: PropTypes.any
 };
 
 export default MainFilterPanel;
